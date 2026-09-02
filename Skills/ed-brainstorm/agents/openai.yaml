@@ -1,0 +1,5 @@
+interface:
+  display_name: "Ed Brainstorm"
+  short_description: "Clarify an idea before writing a spec"
+policy:
+  allow_implicit_invocation: false

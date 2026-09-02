@@ -1,6 +1,6 @@
 {
   "name": "com.interneted.ai-agent-config",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "displayName": "AI Agent Config",
   "description": "Maintain MCP servers and Agent Skills once, then install them for Claude Code and Codex.",
   "unity": "2021.3",
@@ -21,6 +21,7 @@
   ],
   "scripts": {
     "check": "node Scripts/sync.mjs check",
-    "test": "node Scripts/test.mjs"
+    "test": "node Scripts/test.mjs",
+    "upstreams": "node Scripts/sync-upstreams.mjs"
   }
 }

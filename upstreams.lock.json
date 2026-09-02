@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-09-03",
+  "sources": {
+    "mattpocock-skills": {
+      "repository": "https://github.com/mattpocock/skills.git",
+      "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
+      "paths": [
+        "skills/*/*"
+      ],
+      "selectionRule": "Import every directory below skills/ that contains SKILL.md; category maturity does not exclude it.",
+      "skills": [
+        "ask-matt",
+        "claude-handoff",
+        "code-review",
+        "codebase-design",
+        "diagnosing-bugs",
+        "domain-modeling",
+        "git-guardrails-claude-code",
+        "grill-me",
+        "grill-with-docs",
+        "grilling",
+        "handoff",
+        "implement",
+        "implement-spec",
+        "improve-codebase-architecture",
+        "loop-me",
+        "migrate-to-shoehorn",
+        "prototype",
+        "research",
+        "resolving-merge-conflicts",
+        "retro",
+        "scaffold-exercises",
+        "setup-matt-pocock-skills",
+        "setup-pre-commit",
+        "setup-ts-deep-modules",
+        "tdd",
+        "teach",
+        "to-questionnaire",
+        "to-spec",
+        "to-tickets",
+        "triage",
+        "wait-what",
+        "wayfinder",
+        "wizard",
+        "writing-beats",
+        "writing-for-agents",
+        "writing-fragments",
+        "writing-shape"
+      ]
+    },
+    "compound-engineering-plugin": {
+      "repository": "https://github.com/everyinc/compound-engineering-plugin.git",
+      "commit": "37eed42548189fcecbcb9333c8268d2cb4163c5d",
+      "paths": [
+        "skills/ce-commit"
+      ],
+      "skills": [
+        "ce-commit"
+      ],
+      "derivedSkills": {
+        "ed-brainstorm": {
+          "basedOn": "skills/ce-brainstorm",
+          "note": "Locally rewritten to hand off to Matt Pocock's to-spec and to-tickets workflow; never overwritten automatically."
+        }
+      }
+    }
+  }
+}

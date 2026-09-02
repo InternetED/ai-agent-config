@@ -1,0 +1,5 @@
+interface:
+  display_name: "Ed Workflow"
+  short_description: "Choose the next engineering workflow step"
+policy:
+  allow_implicit_invocation: false

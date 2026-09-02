@@ -10,6 +10,10 @@ package that can be distributed through OpenUPM.
 - `Config/mcp.servers.json` contains vendor-neutral MCP definitions.
 - `Scripts/sync.mjs` validates, generates, and installs both platform formats.
 
+The package currently includes 40 engineering workflow Skills migrated from
+the former `ed-engineering` plugin, plus the package-management Skill. It does
+not use a Codex plugin manifest or plugin installation lifecycle.
+
 Generated files and files under your user profile are outputs, not authoring
 locations.
 
@@ -46,6 +50,25 @@ node Scripts/sync.mjs install --prune
 Use `node Scripts/sync.mjs help` for options. Installation creates backups
 before changing MCP configuration. It never stores credentials; manifests
 refer to environment-variable names instead.
+
+## Update imported Skills
+
+Imported upstream versions are pinned in `upstreams.lock.json`. Preview the
+latest upstream changes without modifying the repository:
+
+```sh
+npm run upstreams
+```
+
+After reviewing the list, update the authoritative copies and validate them:
+
+```sh
+npm run upstreams -- --apply
+```
+
+Add `--install` to immediately synchronize the updated Skills to Claude Code
+and Codex as well. `ed-brainstorm` and `ed-workflow` are local Skills and are
+never overwritten by the updater.
 
 ## Maintain the repository
 
