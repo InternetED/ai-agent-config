@@ -58,9 +58,15 @@ try {
   assert.equal(claude.mcpServers.remote_docs.headers.Authorization, "Bearer ${REMOTE_TOKEN}");
   assert.equal(claude.mcpServers.disabled_server, undefined);
 
+  const sourceSkillNames = fs.readdirSync(path.join(scriptDirectory, "..", "Skills"), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
   for (const skillRoot of [path.join(temporaryHome, ".agents", "skills"), path.join(temporaryHome, ".claude", "skills")]) {
-    assert.equal(fs.existsSync(path.join(skillRoot, "manage-ai-agent-config", "SKILL.md")), true);
-    assert.equal(fs.existsSync(path.join(skillRoot, "manage-ai-agent-config", ".ai-agent-config-owner.json")), true);
+    for (const name of sourceSkillNames) {
+      assert.equal(fs.existsSync(path.join(skillRoot, name, "SKILL.md")), true, `${name} was not installed`);
+      assert.equal(fs.existsSync(path.join(skillRoot, name, ".ai-agent-config-owner.json")), true, `${name} is missing ownership metadata`);
+    }
   }
 
   console.log("Integration test passed: shared inputs installed for Claude Code and Codex without replacing unrelated configuration.");

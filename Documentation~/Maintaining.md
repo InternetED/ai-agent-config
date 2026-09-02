@@ -8,6 +8,7 @@ Edit only these authoritative inputs:
 - Add and update MCP servers in `Config/mcp.servers.json`.
 - Change translation behavior in `Scripts/sync.mjs` only when a client format
   changes.
+- Treat `upstreams.lock.json` as the record of imported Skill provenance.
 
 Do not hand-edit generated output or installed files under a user profile. Run
 the synchronizer again instead.
@@ -22,6 +23,21 @@ frontmatter. Keep the shared workflow portable; place Codex-only UI metadata in
 Run `node Scripts/sync.mjs check`. Completion means every direct child of
 `Skills/` has a valid `SKILL.md`, every skill name matches its directory, and
 the integration tests pass.
+
+## Update imported Skills
+
+Run `npm run upstreams` to clone the current upstream defaults into a temporary
+directory and preview added, changed, and removed Skills. Nothing in the
+repository changes during preview.
+
+Run `npm run upstreams -- --apply` to apply the preview, refresh third-party
+license copies and commit pins, and validate the result. Add `--install` to
+also synchronize the result to both clients. You may test a specific branch or
+tag with `--matt-ref <ref>` or `--compound-ref <ref>`.
+
+The updater owns the Skill names recorded under each source in
+`upstreams.lock.json`. It must never overwrite the local `ed-brainstorm` or
+`ed-workflow` Skills. Review the resulting Git diff before release.
 
 ## Add an MCP server
 
