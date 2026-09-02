@@ -1,0 +1,6 @@
+{
+  "name": "InternetED.AIAgentConfig.Editor",
+  "rootNamespace": "InternetED.AIAgentConfig",
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}

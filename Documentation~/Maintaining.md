@@ -1,0 +1,58 @@
+# Maintaining AI Agent Config
+
+## Authority boundaries
+
+Edit only these authoritative inputs:
+
+- Add and update shared skills under `Skills/<skill-name>/`.
+- Add and update MCP servers in `Config/mcp.servers.json`.
+- Change translation behavior in `Scripts/sync.mjs` only when a client format
+  changes.
+
+Do not hand-edit generated output or installed files under a user profile. Run
+the synchronizer again instead.
+
+## Add a skill
+
+Create `Skills/<skill-name>/SKILL.md`. Use lowercase letters, digits, and
+hyphens for the directory and `name`. Include concise `name` and `description`
+frontmatter. Keep the shared workflow portable; place Codex-only UI metadata in
+`agents/openai.yaml` only when it adds value.
+
+Run `node Scripts/sync.mjs check`. Completion means every direct child of
+`Skills/` has a valid `SKILL.md`, every skill name matches its directory, and
+the integration tests pass.
+
+## Add an MCP server
+
+Add one entry to `Config/mcp.servers.json`. Use `stdio` for a local process and
+`http` for a streamable HTTP endpoint. Put credential names in `envVars`,
+`bearerTokenEnv`, or `headersFromEnv`; keep credential values out of Git.
+
+For example:
+
+```json
+{
+  "servers": {
+    "context7": {
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "internal-docs": {
+      "transport": "http",
+      "url": "https://docs.example.com/mcp",
+      "bearerTokenEnv": "INTERNAL_DOCS_TOKEN"
+    }
+  }
+}
+```
+
+Run `node Scripts/sync.mjs generate` and inspect both generated formats before
+installation. Completion means `check`, `test`, and `npm pack --dry-run` pass.
+
+## Release
+
+Update `package.json` and `CHANGELOG.md`, commit the change, and tag the same
+semantic version, for example `v0.2.0`. OpenUPM reads published Git tags and
+requires the tag version to match `package.json`.
