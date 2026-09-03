@@ -11,5 +11,11 @@ Before submitting it to OpenUPM:
 5. After OpenUPM finishes indexing the tag, verify installation in a clean
    Unity project with `openupm add com.interneted.ai-agent-config`.
 
+Opening that Unity project must automatically synchronize the package once for
+the installed version. A user must not need to invoke `Scripts/sync.mjs`.
+Confirm the Unity Console reports successful synchronization and that the
+Skills appear in both user-level agent directories. The Unity menu command is
+only a repair path when automatic synchronization fails.
+
 OpenUPM hosts public open-source Unity packages. Authentication for MCP servers
 is separate and remains local to each computer.
