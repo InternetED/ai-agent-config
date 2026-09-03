@@ -10,8 +10,9 @@ Edit only these authoritative inputs:
   changes.
 - Treat `upstreams.lock.json` as the record of imported Skill provenance.
 
-Do not hand-edit generated output or installed files under a user profile. Run
-the synchronizer again instead.
+Do not hand-edit generated output or installed files. Run the installer again
+with an explicit `--scope user` or `--scope project` instead. Never choose a
+scope on a user's behalf.
 
 ## Add a skill
 
@@ -65,10 +66,14 @@ For example:
 ```
 
 Run `node Scripts/sync.mjs generate` and inspect both generated formats before
-installation. Completion means `check`, `test`, and `npm pack --dry-run` pass.
+installation. If a local installation is requested, use
+`node Scripts/sync.mjs install --scope user` or
+`node Scripts/sync.mjs install --scope project`. Completion means `check`,
+`test`, and `npm pack --dry-run` pass.
 
 ## Release
 
 Update `package.json` and `CHANGELOG.md`, commit the change, and tag the same
-semantic version, for example `v0.2.0`. OpenUPM reads published Git tags and
-requires the tag version to match `package.json`.
+semantic version. The public Git tag can be executed directly with `npx`; the
+optional OpenUPM listing reads the same tags and requires the tag version to
+match `package.json`.

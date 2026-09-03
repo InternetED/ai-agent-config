@@ -20,6 +20,8 @@ function parseArguments(argv) {
   const options = {
     command: "help",
     home: os.homedir(),
+    scope: null,
+    project: process.cwd(),
     manifest: path.join(packageRoot, "Config", "mcp.servers.json"),
     output: null,
     prune: false,
@@ -32,6 +34,8 @@ function parseArguments(argv) {
   while (argv.length > 0) {
     const argument = argv.shift();
     if (argument === "--home") options.home = path.resolve(argv.shift() ?? fail("--home requires a path"));
+    else if (argument === "--scope") options.scope = argv.shift() ?? fail("--scope requires user or project");
+    else if (argument === "--project") options.project = path.resolve(argv.shift() ?? fail("--project requires a path"));
     else if (argument === "--manifest") options.manifest = path.resolve(argv.shift() ?? fail("--manifest requires a path"));
     else if (argument === "--output") options.output = path.resolve(argv.shift() ?? fail("--output requires a path"));
     else if (argument === "--prune") options.prune = true;
@@ -42,6 +46,12 @@ function parseArguments(argv) {
 
   if (!new Set(["help", "check", "generate", "install"]).has(options.command)) {
     fail(`Unknown command: ${options.command}`);
+  }
+  if (options.scope !== null && !new Set(["user", "project"]).has(options.scope)) {
+    fail("--scope must be user or project");
+  }
+  if (options.command === "install" && options.scope === null) {
+    fail("install requires --scope user or --scope project");
   }
   return options;
 }
@@ -254,14 +264,15 @@ function generate(servers, options) {
 }
 
 function install(servers, skills, options) {
-  const stateRoot = path.join(options.home, ".ai-agent-config");
+  const targetRoot = options.scope === "project" ? options.project : options.home;
+  const stateRoot = path.join(targetRoot, ".ai-agent-config");
   const statePath = path.join(stateRoot, "state.json");
   const previousState = fs.existsSync(statePath) ? readJson(statePath) : { skillNames: [], mcpNames: [] };
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
   const backupRoot = path.join(stateRoot, "backups", timestamp);
 
-  const codexSkills = path.join(options.home, ".agents", "skills");
-  const claudeSkills = path.join(options.home, ".claude", "skills");
+  const codexSkills = path.join(targetRoot, ".agents", "skills");
+  const claudeSkills = path.join(targetRoot, ".claude", "skills");
   for (const skill of skills) {
     installSkill(skill, codexSkills, options);
     installSkill(skill, claudeSkills, options);
@@ -269,7 +280,7 @@ function install(servers, skills, options) {
   pruneSkills(previousState.skillNames ?? [], skills.map((skill) => skill.name), codexSkills, options);
   pruneSkills(previousState.skillNames ?? [], skills.map((skill) => skill.name), claudeSkills, options);
 
-  const codexPath = path.join(options.home, ".codex", "config.toml");
+  const codexPath = path.join(targetRoot, ".codex", "config.toml");
   const existingCodex = fs.existsSync(codexPath) ? fs.readFileSync(codexPath, "utf8") : "";
   let nextCodex = removeManagedCodexBlock(existingCodex);
   const renderedCodex = renderCodex(servers);
@@ -280,7 +291,9 @@ function install(servers, skills, options) {
     writeFile(codexPath, nextCodex, options);
   }
 
-  const claudePath = path.join(options.home, ".claude.json");
+  const claudePath = options.scope === "project"
+    ? path.join(targetRoot, ".mcp.json")
+    : path.join(targetRoot, ".claude.json");
   const existingClaudeText = fs.existsSync(claudePath) ? fs.readFileSync(claudePath, "utf8") : "{}";
   let existingClaude;
   try {
@@ -307,12 +320,14 @@ function install(servers, skills, options) {
   const state = {
     package: PACKAGE_ID,
     version: readJson(path.join(packageRoot, "package.json")).version,
+    scope: options.scope,
+    targetRoot,
     installedAt: new Date().toISOString(),
     skillNames: skills.map((skill) => skill.name),
     mcpNames: Object.keys(servers).sort(),
   };
   writeFile(statePath, `${JSON.stringify(state, null, 2)}\n`, options);
-  console.log(`Installed ${skills.length} skill(s) and ${Object.keys(servers).length} MCP server(s)`);
+  console.log(`Installed ${skills.length} skill(s) and ${Object.keys(servers).length} MCP server(s) at ${options.scope} scope: ${targetRoot}`);
 }
 
 function showHelp() {
@@ -321,10 +336,13 @@ function showHelp() {
 Usage:
   node Scripts/sync.mjs check
   node Scripts/sync.mjs generate [--output PATH]
-  node Scripts/sync.mjs install [--prune] [--force] [--dry-run]
+  node Scripts/sync.mjs install --scope user [--prune] [--force] [--dry-run]
+  node Scripts/sync.mjs install --scope project [--project PATH] [--prune] [--force] [--dry-run]
 
 Options:
   --home PATH      Override the user profile (primarily for testing)
+  --scope SCOPE    Required install scope: user or project
+  --project PATH   Project root (defaults to the current directory)
   --manifest PATH  Use a different MCP manifest
   --output PATH    Choose generated-output directory
   --prune          Remove previously managed entries no longer in the source

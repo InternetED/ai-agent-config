@@ -9,54 +9,26 @@ using UnityEngine;
 
 namespace InternetED.AIAgentConfig
 {
-    [InitializeOnLoad]
     internal static class AIAgentConfigInstaller
     {
-        private const string AutoInstalledVersionKey = "InternetED.AIAgentConfig.AutoInstalledVersion";
-        private const string AutoInstallAttemptedSessionKeyPrefix = "InternetED.AIAgentConfig.AutoInstallAttempted.";
-
-        static AIAgentConfigInstaller()
-        {
-            EditorApplication.delayCall += AutoInstall;
-        }
-
-        private static void AutoInstall()
-        {
-            EditorApplication.delayCall -= AutoInstall;
-
-            var packageInfo = PackageInfo.FindForAssembly(Assembly.GetExecutingAssembly());
-            if (packageInfo == null)
-            {
-                UnityEngine.Debug.LogError("AI Agent Config could not locate its installed package, so automatic synchronization was skipped.");
-                return;
-            }
-
-            var sessionKey = AutoInstallAttemptedSessionKeyPrefix + packageInfo.version;
-            if (SessionState.GetBool(sessionKey, false))
-            {
-                return;
-            }
-
-            SessionState.SetBool(sessionKey, true);
-            if (EditorPrefs.GetString(AutoInstalledVersionKey, string.Empty) == packageInfo.version)
-            {
-                return;
-            }
-
-            if (RunSync(packageInfo, "install --prune", false))
-            {
-                EditorPrefs.SetString(AutoInstalledVersionKey, packageInfo.version);
-                UnityEngine.Debug.Log($"AI Agent Config {packageInfo.version} was automatically synchronized for Claude Code and Codex.");
-            }
-        }
-
-        [MenuItem("Tools/AI Agent Config/Install or Update")]
-        private static void Install()
+        [MenuItem("Tools/AI Agent Config/Install/User Scope")]
+        private static void InstallUserScope()
         {
             var packageInfo = FindPackage(true);
-            if (packageInfo != null && RunSync(packageInfo, "install --prune", true))
+            if (packageInfo != null)
             {
-                EditorPrefs.SetString(AutoInstalledVersionKey, packageInfo.version);
+                RunSync(packageInfo, "install --scope user --prune", true);
+            }
+        }
+
+        [MenuItem("Tools/AI Agent Config/Install/Project Scope")]
+        private static void InstallProjectScope()
+        {
+            var packageInfo = FindPackage(true);
+            if (packageInfo != null)
+            {
+                var projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+                RunSync(packageInfo, $"install --scope project --project \"{projectRoot}\" --prune", true);
             }
         }
 

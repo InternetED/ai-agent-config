@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const syncScript = path.join(scriptDirectory, "sync.mjs");
+const cliScript = path.join(scriptDirectory, "cli.mjs");
 const temporaryHome = fs.mkdtempSync(path.join(os.tmpdir(), "ai-agent-config-test-"));
 
 try {
@@ -40,7 +41,7 @@ try {
     }
   }, null, 2)}\n`, "utf8");
 
-  const result = spawnSync(process.execPath, [syncScript, "install", "--home", temporaryHome, "--manifest", manifestPath, "--prune"], {
+  const result = spawnSync(process.execPath, [syncScript, "install", "--scope", "user", "--home", temporaryHome, "--manifest", manifestPath, "--prune"], {
     encoding: "utf8"
   });
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
@@ -69,12 +70,41 @@ try {
     }
   }
 
-  const unityInstaller = fs.readFileSync(path.join(scriptDirectory, "..", "Editor", "AIAgentConfigInstaller.cs"), "utf8");
-  assert.match(unityInstaller, /\[InitializeOnLoad\]/, "Unity package must automatically initialize after OpenUPM installation");
-  assert.match(unityInstaller, /EditorApplication\.delayCall \+= AutoInstall/, "automatic installation must wait until Editor initialization completes");
-  assert.match(unityInstaller, /RunSync\(packageInfo, "install --prune", false\)/, "automatic installation must deploy shared configuration without user commands");
+  const projectRoot = path.join(temporaryHome, "sample-project");
+  fs.mkdirSync(path.join(projectRoot, ".codex"), { recursive: true });
+  fs.writeFileSync(path.join(projectRoot, ".codex", "config.toml"), 'model = "project-model"\n', "utf8");
+  fs.writeFileSync(path.join(projectRoot, ".mcp.json"), `${JSON.stringify({ projectSetting: true, mcpServers: {} }, null, 2)}\n`, "utf8");
 
-  console.log("Integration test passed: shared inputs installed for Claude Code and Codex without replacing unrelated configuration.");
+  const projectResult = spawnSync(process.execPath, [syncScript, "install", "--scope", "project", "--project", projectRoot, "--manifest", manifestPath, "--prune"], {
+    encoding: "utf8"
+  });
+  assert.equal(projectResult.status, 0, `${projectResult.stdout}\n${projectResult.stderr}`);
+  assert.match(fs.readFileSync(path.join(projectRoot, ".codex", "config.toml"), "utf8"), /model = "project-model"/);
+  assert.match(fs.readFileSync(path.join(projectRoot, ".codex", "config.toml"), "utf8"), /mcp_servers\."local_docs"/);
+  const projectClaude = JSON.parse(fs.readFileSync(path.join(projectRoot, ".mcp.json"), "utf8"));
+  assert.equal(projectClaude.projectSetting, true);
+  assert.equal(projectClaude.mcpServers.local_docs.env.DOCS_TOKEN, "${DOCS_TOKEN}");
+  const projectState = JSON.parse(fs.readFileSync(path.join(projectRoot, ".ai-agent-config", "state.json"), "utf8"));
+  assert.equal(projectState.scope, "project");
+  assert.equal(projectState.targetRoot, projectRoot);
+  for (const skillRoot of [path.join(projectRoot, ".agents", "skills"), path.join(projectRoot, ".claude", "skills")]) {
+    for (const name of sourceSkillNames) {
+      assert.equal(fs.existsSync(path.join(skillRoot, name, "SKILL.md")), true, `${name} was not installed at project scope`);
+    }
+  }
+
+  const cliResult = spawnSync(process.execPath, [cliScript, "--scope", "project", "--project", projectRoot, "--dry-run"], { encoding: "utf8" });
+  assert.equal(cliResult.status, 0, `${cliResult.stdout}\n${cliResult.stderr}`);
+  const nonInteractiveResult = spawnSync(process.execPath, [cliScript], { encoding: "utf8" });
+  assert.notEqual(nonInteractiveResult.status, 0);
+  assert.match(nonInteractiveResult.stderr, /requires --scope user or --scope project/);
+
+  const unityInstaller = fs.readFileSync(path.join(scriptDirectory, "..", "Editor", "AIAgentConfigInstaller.cs"), "utf8");
+  assert.doesNotMatch(unityInstaller, /\[InitializeOnLoad\]/, "OpenUPM must not silently choose an installation scope");
+  assert.match(unityInstaller, /install --scope user --prune/, "Unity must offer user-scope installation");
+  assert.match(unityInstaller, /install --scope project/, "Unity must offer project-scope installation");
+
+  console.log("Integration test passed: user and project scopes install shared inputs for Claude Code and Codex without replacing unrelated configuration.");
 } finally {
   const resolvedTemporaryHome = path.resolve(temporaryHome);
   if (resolvedTemporaryHome.startsWith(path.resolve(os.tmpdir()) + path.sep)) {

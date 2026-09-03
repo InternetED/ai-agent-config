@@ -1,6 +1,6 @@
 {
   "name": "com.interneted.ai-agent-config",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "displayName": "AI Agent Config",
   "description": "Maintain MCP servers and Agent Skills once, then install them for Claude Code and Codex.",
   "unity": "2021.3",
@@ -8,6 +8,14 @@
     "name": "InternetED"
   },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/InternetED/ai-agent-config.git"
+  },
+  "homepage": "https://github.com/InternetED/ai-agent-config#readme",
+  "bugs": {
+    "url": "https://github.com/InternetED/ai-agent-config/issues"
+  },
   "documentationUrl": "https://github.com/InternetED/ai-agent-config#readme",
   "changelogUrl": "https://github.com/InternetED/ai-agent-config/blob/main/CHANGELOG.md",
   "licensesUrl": "https://github.com/InternetED/ai-agent-config/blob/main/LICENSE",
@@ -19,6 +27,9 @@
     "mcp",
     "skills"
   ],
+  "bin": {
+    "ai-agent-config": "Scripts/cli.mjs"
+  },
   "scripts": {
     "check": "node Scripts/sync.mjs check",
     "test": "node Scripts/test.mjs",
