@@ -1,21 +1,25 @@
-# OpenUPM publishing
+# Optional OpenUPM publishing
 
-This repository is a Unity Package Manager package at the repository root.
+OpenUPM is an optional Unity-specific entry point. The primary cross-platform
+installer is the repository's `npx` command documented in the README.
 
-Before submitting it to OpenUPM:
+Before publishing a Unity package release:
 
 1. Push the public GitHub repository.
 2. Confirm `npm run check`, `npm test`, and `npm pack --dry-run` pass.
-3. Create a semantic-version tag matching `package.json`, such as `v0.1.0`.
-4. Submit `com.interneted.ai-agent-config` through the OpenUPM package-add form.
-5. After OpenUPM finishes indexing the tag, verify installation in a clean
-   Unity project with `openupm add com.interneted.ai-agent-config`.
+3. Create a semantic-version tag matching `package.json`.
+4. Submit or update `com.interneted.ai-agent-config` on OpenUPM.
+5. Verify installation in a clean Unity project with
+   `openupm add com.interneted.ai-agent-config`.
 
-Opening that Unity project must automatically synchronize the package once for
-the installed version. A user must not need to invoke `Scripts/sync.mjs`.
-Confirm the Unity Console reports successful synchronization and that the
-Skills appear in both user-level agent directories. The Unity menu command is
-only a repair path when automatic synchronization fails.
+Installing the Unity package must not select an AI-agent configuration scope or
+write agent configuration automatically. The user chooses one menu action:
 
-OpenUPM hosts public open-source Unity packages. Authentication for MCP servers
-is separate and remains local to each computer.
+```text
+Tools > AI Agent Config > Install > User Scope
+Tools > AI Agent Config > Install > Project Scope
+```
+
+Both actions run the same repository synchronizer used by the cross-platform
+installer. Node.js 18 or newer must be available on `PATH`. Authentication for
+MCP servers remains local to each computer and is never included in the package.

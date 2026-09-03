@@ -1,78 +1,87 @@
 # AI Agent Config
 
 Maintain MCP servers and Agent Skills once, then install the same definitions
-for Claude Code and Codex. The repository is also a Unity Package Manager
-package that can be distributed through OpenUPM.
+for Claude Code and Codex. The public Git repository is the source of truth and
+can be run directly with Node.js on Windows, macOS, and Linux.
+
+## Install
+
+Run this command from any terminal with Node.js 18 or newer:
+
+```sh
+npx --yes github:InternetED/ai-agent-config
+```
+
+Like the `skills` installer, this asks where the files should live instead of
+silently choosing for you:
+
+| Scope | Skills | Codex MCP | Claude Code MCP |
+| --- | --- | --- | --- |
+| User | `~/.agents/skills`, `~/.claude/skills` | `~/.codex/config.toml` | `~/.claude.json` |
+| Project | `.agents/skills`, `.claude/skills` | `.codex/config.toml` | `.mcp.json` |
+
+For scripts or CI, choose the scope explicitly:
+
+```sh
+npx --yes github:InternetED/ai-agent-config --scope user
+npx --yes github:InternetED/ai-agent-config --scope project
+```
+
+Project scope defaults to the current directory. Use `--project PATH` to target
+another project. Restart an agent session that was already open if it does not
+detect new Skills immediately.
+
+The installer copies managed Skills and merges managed MCP entries without
+replacing unrelated settings. It creates backups before changing MCP
+configuration and stores environment-variable names, never credentials.
 
 ## Source of truth
 
-- `Skills/` contains portable Agent Skills. Each direct child is one skill.
+- `Skills/` contains portable Agent Skills. Each direct child is one Skill.
 - `Config/mcp.servers.json` contains vendor-neutral MCP definitions.
-- `Scripts/sync.mjs` validates, generates, and installs both platform formats.
+- `Scripts/sync.mjs` validates, generates, and installs both client formats.
 
-The package currently includes 40 engineering workflow Skills migrated from
-the former `ed-engineering` plugin, plus the package-management Skill. It does
-not use a Codex plugin manifest or plugin installation lifecycle.
+The package includes 40 engineering workflow Skills migrated from the former
+`ed-engineering` plugin, plus the package-management Skill. It does not use a
+Codex plugin manifest or plugin installation lifecycle.
 
-Generated files and files under your user profile are outputs, not authoring
-locations.
+## Update
 
-## Install from OpenUPM
-
-After the package is listed on OpenUPM:
+Run the installation command again to use the current `main` branch. Pin a
+release when reproducibility matters:
 
 ```sh
-openupm add com.interneted.ai-agent-config
+npx --yes github:InternetED/ai-agent-config#v0.4.0
 ```
 
-That is the only installation command. When Unity imports or upgrades the
-package, it automatically installs the Skills and merges the MCP definitions
-for Claude Code and Codex. Each package version runs once per computer.
-
-Node.js 18 or newer must be available on `PATH`; it is already required by the
-OpenUPM CLI. Restart any agent session that was already open if it does not
-detect the new Skills immediately.
-
-If automatic synchronization reports an error in the Unity Console, retry from:
-
-```text
-Tools > AI Agent Config > Install or Update
-```
-
-The installer copies managed skills into both user-level skill directories and
-merges managed MCP entries without replacing unrelated settings:
-
-- Codex skills: `~/.agents/skills/`
-- Claude Code skills: `~/.claude/skills/`
-- Codex MCP: `~/.codex/config.toml`
-- Claude Code MCP: `~/.claude.json`
-
-Installation creates backups before changing MCP configuration. It never
-stores credentials; manifests refer to environment-variable names instead.
-
-## Update imported Skills
-
-Imported upstream versions are pinned in `upstreams.lock.json`. Preview the
-latest upstream changes without modifying the repository:
+Imported upstream versions are pinned in `upstreams.lock.json`. Maintainers can
+preview or apply upstream changes with:
 
 ```sh
 npm run upstreams
-```
-
-After reviewing the list, update the authoritative copies and validate them:
-
-```sh
 npm run upstreams -- --apply
 ```
 
-Add `--install` to immediately synchronize the updated Skills to Claude Code
-and Codex as well. `ed-brainstorm` and `ed-workflow` are local Skills and are
-never overwritten by the updater.
+`ed-brainstorm` and `ed-workflow` are local Skills and are never overwritten by
+the upstream updater.
+
+## Optional Unity installation
+
+The repository remains compatible with Unity Package Manager and OpenUPM. After
+adding `com.interneted.ai-agent-config`, choose one of these Unity menu actions:
+
+```text
+Tools > AI Agent Config > Install > User Scope
+Tools > AI Agent Config > Install > Project Scope
+```
+
+Unity never selects or installs a scope automatically. See
+[Documentation~/OpenUPM.md](Documentation~/OpenUPM.md) for publishing details.
 
 ## Maintain the repository
 
 Read [Documentation~/Maintaining.md](Documentation~/Maintaining.md) before
-adding a skill or MCP server. Then run:
+adding a Skill or MCP server. Then run:
 
 ```sh
 npm run check
@@ -80,5 +89,4 @@ npm test
 npm pack --dry-run
 ```
 
-OpenUPM releases use semantic-version tags. The tag version must match the
-`version` field in `package.json`.
+Release tags use semantic versions and must match `package.json`.

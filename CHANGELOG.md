@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0] - 2026-09-03
+
+- Add a cross-platform interactive installer that runs directly from the public GitHub repository.
+- Let users choose user-level or project-level Skills and MCP configuration.
+- Require an explicit scope for non-interactive installation.
+- Stop automatically modifying user configuration when Unity imports the OpenUPM package.
+- Keep OpenUPM as an optional Unity-specific installation entry point.
+
 ## [0.3.0] - 2026-09-03
 
 - Automatically synchronize Skills and MCP configuration when Unity loads a newly installed or upgraded OpenUPM package version.
