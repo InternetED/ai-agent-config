@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0] - 2026-09-03
+
+- Automatically synchronize Skills and MCP configuration when Unity loads a newly installed or upgraded OpenUPM package version.
+- Keep manual Unity menu commands only as validation and repair actions.
+- Verify the automatic-install entry point in integration tests.
+
 ## [0.2.0] - 2026-09-03
 
 - Import 40 engineering workflow skills from the former `ed-engineering` plugin.

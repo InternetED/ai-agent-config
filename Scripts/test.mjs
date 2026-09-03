@@ -69,6 +69,11 @@ try {
     }
   }
 
+  const unityInstaller = fs.readFileSync(path.join(scriptDirectory, "..", "Editor", "AIAgentConfigInstaller.cs"), "utf8");
+  assert.match(unityInstaller, /\[InitializeOnLoad\]/, "Unity package must automatically initialize after OpenUPM installation");
+  assert.match(unityInstaller, /EditorApplication\.delayCall \+= AutoInstall/, "automatic installation must wait until Editor initialization completes");
+  assert.match(unityInstaller, /RunSync\(packageInfo, "install --prune", false\)/, "automatic installation must deploy shared configuration without user commands");
+
   console.log("Integration test passed: shared inputs installed for Claude Code and Codex without replacing unrelated configuration.");
 } finally {
   const resolvedTemporaryHome = path.resolve(temporaryHome);

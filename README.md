@@ -25,7 +25,15 @@ After the package is listed on OpenUPM:
 openupm add com.interneted.ai-agent-config
 ```
 
-Node.js 18 or newer is required for synchronization. In Unity, select:
+That is the only installation command. When Unity imports or upgrades the
+package, it automatically installs the Skills and merges the MCP definitions
+for Claude Code and Codex. Each package version runs once per computer.
+
+Node.js 18 or newer must be available on `PATH`; it is already required by the
+OpenUPM CLI. Restart any agent session that was already open if it does not
+detect the new Skills immediately.
+
+If automatic synchronization reports an error in the Unity Console, retry from:
 
 ```text
 Tools > AI Agent Config > Install or Update
@@ -39,17 +47,8 @@ merges managed MCP entries without replacing unrelated settings:
 - Codex MCP: `~/.codex/config.toml`
 - Claude Code MCP: `~/.claude.json`
 
-You can also run the package script directly:
-
-```sh
-node Scripts/sync.mjs check
-node Scripts/sync.mjs generate
-node Scripts/sync.mjs install --prune
-```
-
-Use `node Scripts/sync.mjs help` for options. Installation creates backups
-before changing MCP configuration. It never stores credentials; manifests
-refer to environment-variable names instead.
+Installation creates backups before changing MCP configuration. It never
+stores credentials; manifests refer to environment-variable names instead.
 
 ## Update imported Skills
 
