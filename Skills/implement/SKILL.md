@@ -7,7 +7,7 @@ Implement the work described by the user in the spec or tickets.
 
 Use /tdd where possible, at pre-agreed seams.
 
-Run typechecking regularly, single test files regularly, and the full test suite once at the end.
+Run typechecking regularly and targeted tests (path/`-t` filter) every cycle; run the full suite only at the end (or before commit/PR).
 
 Once done, use /code-review to review the work.
 
