@@ -36,3 +36,12 @@ When the shape of that interface is itself in question (how deep the module is, 
 - **Red before green.** Write the failing test first, then only enough code to pass it. Don't anticipate future tests or add speculative features.
 - **One slice at a time.** One seam, one test, one minimal implementation per cycle.
 - **Refactoring is not part of the loop.** It belongs to the review stage (see the `code-review` skill), not the red → green implementation cycle.
+
+## Test execution
+
+Keep the red → green loop fast. Writing tests and code is cheap; waiting on a full suite is not.
+
+- **Targeted runs only.** Each red → green cycle, run only the related test file or test name (path filter or `-t` / equivalent). Never default to the full suite.
+- **Full suite is rare.** Run the entire suite only before commit, before opening a PR, or when the user explicitly asks.
+- **Unit vs integration/e2e.** Unit tests should finish in seconds — run them every cycle. Integration and e2e are slow — run them only when the change touches that seam, or at wrap-up before commit/PR.
+- **Read project guidance first.** If `CONTEXT.md` or a test config (e.g. `vitest.config.*`, `jest.config.*`, `package.json` scripts) exists, read it and choose the project's intended commands and filters.
