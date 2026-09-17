@@ -41,9 +41,33 @@ configuration and stores environment-variable names, never credentials.
 - `Config/mcp.servers.json` contains vendor-neutral MCP definitions.
 - `Scripts/sync.mjs` validates, generates, and installs both client formats.
 
-The package includes 40 engineering workflow Skills migrated from the former
+The package includes 43 Skills: engineering workflows migrated from the former
 `ed-engineering` plugin, plus the package-management Skill. It does not use a
 Codex plugin manifest or plugin installation lifecycle.
+
+### Recent skill updates (on main)
+
+- **tdd** — Targeted tests only each red→green cycle (path/`-t`); never default
+  to the full suite. Full suite only before commit/PR or when asked. Unit every
+  cycle; integration/e2e when that seam changes or at wrap-up. Read
+  `CONTEXT.md` / test config first.
+- **implement** — Targeted tests every cycle; full suite only at end / before
+  commit/PR.
+- **implement-spec** — Subagent failure: max 2 retries (3 attempts), then mark
+  failed and continue the frontier. Per-ticket targeted test gate (self-report
+  insufficient). Merger conflicts: preserve intents or stop and ask.
+- **verification-before-completion** (new) — No completion / fixed / passing
+  claims without fresh command evidence; prefer targeted verification.
+- **security-review** (new) — OWASP-oriented pass: secrets, authz, injection,
+  validation, sensitive data, dependency CVEs; severity-ranked findings.
+- **code-review** — For tiny diffs (one or two files, or a handful of hunks),
+  review both axes in-session; do not spawn two sub-agents.
+- **diagnosing-bugs** — Phases may be skipped when justified; Phase 1 (feedback
+  loop) is never optional.
+- **resolving-merge-conflicts** — Run checks relevant to conflicted files, not
+  the full suite by default.
+- **to-spec** / **to-tickets** — Skip the confirmation quiz when the
+  conversation already made requirements / breakdown unambiguous.
 
 ## Update
 
