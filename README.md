@@ -41,9 +41,24 @@ configuration and stores environment-variable names, never credentials.
 - `Config/mcp.servers.json` contains vendor-neutral MCP definitions.
 - `Scripts/sync.mjs` validates, generates, and installs both client formats.
 
-The package includes 40 engineering workflow Skills migrated from the former
+The package includes 42 engineering workflow Skills migrated from the former
 `ed-engineering` plugin, plus the package-management Skill. It does not use a
 Codex plugin manifest or plugin installation lifecycle.
+
+### Workflow highlights
+
+- **`tdd`** — Red → green in vertical slices. Each cycle runs only targeted tests
+  (path or `-t` filter); run the full suite only before commit/PR or when asked.
+- **`implement` / `implement-spec`** — Spec → tickets → parallel implementer
+  worktrees on a shared PR branch; targeted tests per cycle, full suite at wrap-up.
+- **`verification-before-completion`** — No "done" / "fixed" / "passing" claim
+  without a fresh verification command and its output in the same turn.
+- **`security-review`** — OWASP-oriented security pass on a diff or feature
+  (auth, input, secrets) before opening a PR when needed.
+
+Related day-to-day Skills also include `diagnosing-bugs`, `code-review`, and
+`resolving-merge-conflicts`. See each Skill's `SKILL.md` for triggers and
+procedure.
 
 ## Update
 
