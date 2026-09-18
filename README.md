@@ -75,7 +75,7 @@ Run the installation command again to use the current `main` branch. Pin a
 release when reproducibility matters:
 
 ```sh
-npx --yes github:InternetED/ai-agent-config#v0.4.0
+npx --yes github:InternetED/ai-agent-config#v0.5.0
 ```
 
 Imported upstream versions are pinned in `upstreams.lock.json`. Maintainers can

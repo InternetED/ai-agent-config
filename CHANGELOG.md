@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.0] - 2026-09-18
+
+- New skills: verification-before-completion, security-review
+- Harden implement-spec (retry, per-ticket test gate, merger conflict handling)
+- TDD/implement: prefer targeted tests
+- Tighten code-review / diagnosing-bugs / resolving-merge-conflicts / to-spec / to-tickets guidance
+- Improve grill-me / grilling from Matt Pocock feedback
+- README documents 43 skills
+
 ## [0.4.0] - 2026-09-03
 
 - Add a cross-platform interactive installer that runs directly from the public GitHub repository.
