@@ -128,7 +128,7 @@ Grow the skill set from **real failure modes**, not from speculative completenes
    - Failure is about a **local-only** concern → edit `Skills/<local-skill>/` (`ed-brainstorm`, `manage-ai-agent-config`, `security-review`, `verification-before-completion`).
    - Failure is about an **upstream-synced** skill that must keep the fix → edit `Skills/` **and** promote the durable files into `overlays/<skill>/` in the same change.
    - Failure is one-off / exploratory → edit `Skills/` only; accept wipe on next apply.
-4. **Validate:** `node Scripts/sync.mjs check`, `npm test`, and `npm run overlays` (idempotent).
+4. **Validate:** `node Scripts/sync.mjs check`, `npm test` (includes quiet skill-health), and `npm run overlays` (idempotent).
 5. **Draft PR; do not merge** authority changes unless Ed asks.
 
 Record non-trivial promotions and layer choices in `Documentation~/Skill-Audit-*.md` when an audit pass lands.
@@ -140,7 +140,7 @@ change overlays) — not on a noisy cron.
 
 1. **Apply path:** `npm run upstreams -- --apply` (overlays run automatically).
 2. **If you only need to refresh overlays:** `npm run upstreams -- --overlays-only`.
-3. **Validate:** `node Scripts/sync.mjs check` and `npm test`.
+3. **Validate:** `node Scripts/sync.mjs check`, `npm run skill-health`, and `npm test`.
 4. **Short authority checklist** (skim the Git diff + touched skills):
    - Use when / Not for still present where we rely on them
    - Verification / human-gate lines not wiped for high-traffic skills
@@ -154,15 +154,51 @@ change overlays) — not on a noisy cron.
 6. **Stop when quiet:** if the diff is empty of authority regressions, do not
    invent follow-up work.
 
-## Far-term event candidates (optional, quiet)
+## Far-term maintainer routines (event checklists, not cron)
 
-Keep routines **event-driven**. Do not add noisy scheduled jobs that chatter on no-op.
+This repository is a **GitHub skills pack**, not a box-automation host. Prefer
+`npm` scripts + short checklists over external schedulers (no Grok Bot cron).
+Stay quiet when there is nothing to fix.
 
-| Candidate | Trigger | Notes |
+| Routine | When to run | Commands / steps |
 | --- | --- | --- |
-| Post-upstream re-audit | After `upstreams --apply` or overlay edits | **Exists** above — preferred. |
-| Skill health check | After a skill-authority Draft lands, or when sync/check fails | Optional skim: Use when/Not for present on high-traffic skills; overlay targets still exist; no `ed-workflow` routes; `npm test` green. Stay silent when there is nothing to fix. |
-| Overlay reconcile | When upstream preview shows large body churn on an overlaid `SKILL.md` | Manually merge upstream improvements into the overlay copy; do not auto-cron. |
+| **Post-upstream re-audit** | After `upstreams --apply` or intentional overlay edits | Checklist above. |
+| **Quiet skill-health** | After upstreams apply, after overlay edits, and alongside `npm test` on skill/authority Drafts | `npm run skill-health` (also wired into `npm test`). Silent exit 0 when healthy; prints real problems only (orphan/missing overlay targets, name mismatches, empty Use when, `$ed-workflow` / resurrected `ed-workflow`). |
+| **Overlay reconcile** | When `npm run upstreams` preview shows valuable body churn on an overlaid `SKILL.md` | Manually merge upstream improvements into `overlays/<skill>/SKILL.md`; re-run `npm run overlays`, `npm run check`, `npm test`. Do not auto-cron. |
+| **Prune / narrow** | When a skill is noisy, redundant, or repeatedly misfires | See **Prune criteria** below. Prefer thinner Not-for / stop promoting over deleting upstream-synced skills. |
+
+### Quiet skill-health
+
+```sh
+npm run skill-health          # quiet when ok
+npm run skill-health -- --verbose
+# included in:
+npm test
+```
+
+Run after `npm run upstreams -- --apply` (or `--overlays-only`) and before opening
+or updating a skill-authority Draft. Do not schedule it as a noisy chat job.
+
+### Prune criteria
+
+Goal: keep the library **stable or thinner**, not endlessly larger.
+
+| Action | When | Evidence needed | Notes |
+| --- | --- | --- | --- |
+| **Narrow Not-for / Use when** | Skill is useful but misfires or overlaps peers | Repeated wrong trigger, or audit note naming the overlap | Prefer overlay (upstream-synced) or direct `Skills/` edit (local durable). |
+| **Stop promoting** | Local overlay divergence was experimental or upstream caught up | Overlay no longer differs meaningfully, or maintainers agree local delta is obsolete | Delete `overlays/<skill>/…` (or thin it); do **not** delete the upstream skill. |
+| **Remove from upstream lock** | We no longer want that upstream skill in this pack | Explicit Ed / maintainer decision + lock preview | Next `--apply` drops it from `Skills/`; remove any overlay in the same change. |
+| **Delete local-only skill** | Local skill is unused, superseded, or harmful | Ed decision (as with `ed-workflow`) + no live routes | Never delete an upstream-synced skill lightly just to “clean up” — the next apply can resurrect it from the lock. |
+
+Never mass-delete. Prefer improve → overlay Not-for → stop promoting → lock removal → delete local-only.
+
+## Empty MCP catalog (packaging note)
+
+`Config/mcp.servers.json` may ship with `"servers": {}`. That is intentional: this
+package is primarily a **skills** distribution. `npm run check` reporting
+`0 enabled MCP server(s)` is healthy, not a defect. Add servers when a consumer
+needs them; keep credential **names** in the manifest and credential **values**
+out of Git. Do not invent placeholder MCP entries to make the catalog look full.
 
 ## Add an MCP server
 

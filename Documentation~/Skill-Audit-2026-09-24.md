@@ -254,3 +254,42 @@ Documented optional **skill health check** and **overlay reconcile** as quiet ev
 ### Residual mid-term class
 
 **Empty** for promote + docs. Later reconcile passes may refresh overlaid `SKILL.md` bodies when upstream preview shows valuable churn.
+
+## Far-term: quiet health + prune criteria (Draft)
+
+**Date:** 2026-09-24 (Asia/Taipei)
+**Branch:** `draft/skill-far-health-prune`
+**Base HEAD:** `102b517` (post #17 mid-term, verified)
+**Goal:** Close the far-term roadmap slice with a quiet skill-health script, prune criteria, refined event checklists (no cron), and the deferred empty-MCP packaging note — keep thin.
+
+### What shipped
+
+| Item | Detail |
+| --- | --- |
+| Quiet skill-health | `Scripts/skill-health.mjs` + `npm run skill-health`; wired into `npm test` via `Scripts/test-skill-health.mjs`. Silent/success on healthy tree; fails on orphan/missing overlay targets, overlay/skill name mismatch, empty Use when, `$ed-workflow` / resurrected `ed-workflow`. |
+| Prune criteria | Maintaining table: narrow Not-for → stop promoting → lock removal → delete local-only; never delete upstream-synced skills lightly. |
+| Far-term routines | Maintaining: event checklists (re-audit, skill-health, overlay reconcile, prune). Explicitly **not** Grok Bot cron — this is a GitHub skills pack. |
+| Empty MCP note | Maintaining: `"servers": {}` is intentional packaging; `0 enabled MCP server(s)` is healthy. |
+
+### CRUD
+
+| Op | Count | Notes |
+| --- | ---: | --- |
+| **Add skill** | 0 | No mega-router; no `ed-workflow`. |
+| **Edit skill** | 1 | `manage-ai-agent-config` verification points at skill-health + empty MCP note. |
+| **Delete** | 0 | — |
+| **Overlay expand** | 0 | No new overlays without need. |
+
+### Process reflection (mandatory)
+
+| Question | Answer |
+| --- | --- |
+| Was far-term worth a PR? | **Yes, thinly.** Mid-term left skill-health as “documented only”; without a script + prune criteria the library lacks a quiet gate after overlays grow to 38. A docs-only PR would leave the residual open. |
+| Did you cut scope? | **Yes.** No cron, no box automation, no mass progressive disclose, no mega-router, no overlay footprint growth, no Use-when scoring / Not-for lint beyond presence. Health checks only real breakages. MCP note is one paragraph. |
+| Routines = npm scripts + docs? | **Yes.** Confirmed: prefer `npm run skill-health` / checklists over external schedulers. This pack is not 沙皇 box automation. |
+| Anything invented that should have waited? | No. Empty MCP note was deferred thrice and is one accurate paragraph — cheap enough to close. |
+
+### Residual far-term / roadmap class
+
+**Empty** for the planned far-term slice. Ongoing (not blockers): opportunistic overlay reconcile when upstream preview shows valuable churn; explicit apply decision before importing new upstream skills (e.g. `pr`). Roadmap near → mid → far for this audit arc is **complete** pending Ed merge of this Draft.
+

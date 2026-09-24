@@ -35,7 +35,9 @@ do not expect bare `Skills/` edits alone to survive `npm run upstreams -- --appl
 
 ## Verification
 
-Run `node Scripts/sync.mjs check` and `npm test` after changes. The task is
-complete when both pass, every `Skills/*/SKILL.md` validates, generated Claude and Codex
+Run `node Scripts/sync.mjs check`, `npm run skill-health`, and `npm test` after
+changes. The task is complete when those pass, every `Skills/*/SKILL.md`
+validates, overlays are healthy (no orphans/mismatches), generated Claude and Codex
 configurations represent the same enabled servers, and unrelated user
-configuration remains preserved by the integration test.
+configuration remains preserved by the integration test. Empty MCP `servers: {}`
+is a valid packaging state — see Maintaining.
