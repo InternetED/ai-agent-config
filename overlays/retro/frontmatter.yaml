@@ -1,0 +1,2 @@
+# Local durable frontmatter for retro (also present upstream; re-assert after apply).
+disable-model-invocation: true

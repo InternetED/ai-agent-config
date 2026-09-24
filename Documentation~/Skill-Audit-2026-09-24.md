@@ -175,3 +175,82 @@ Upstream-synced (`mattpocock-skills` / `compound-engineering-plugin`) skills edi
 ### Residual near-term class
 
 **Empty** after this Draft lands (mechanism + policy + docs + seed overlays). Remaining durability work is opportunistic promotion of specific skill files into `overlays/` when an apply would otherwise drop them.
+
+## Mid-term: promote durable overlays + ownership docs (Draft)
+
+**Date:** 2026-09-24 (Asia/Taipei)
+**Branch:** `draft/skill-overlay-promote-mid`
+**Base HEAD:** `b902191` (post #16, verified)
+**Goal:** Promote #12–#15 durable edits on upstream-synced skills into `overlays/`, document correction-driven growth and the three-layer ownership split, keep far-term events light.
+
+### Inventory → promote table (concrete)
+
+Upstream-synced skills edited in #12–#15 that were **only in `Skills/`** before this Draft (except `wait-what` / `loop-me` frontmatter seeds from #16):
+
+| Skill | #12–#15 class | Overlay action | Files under `overlays/<skill>/` |
+| --- | --- | --- | --- |
+| `ask-matt` | P0/P15 local pointers | Full `SKILL.md` | `SKILL.md` |
+| `ce-commit` | P15 broken link + gates | Full `SKILL.md` | `SKILL.md` |
+| `claude-handoff` | P0 disambiguation | Full `SKILL.md` | `SKILL.md` |
+| `code-review` | P2 + smells | `SKILL.md` + sibling | `SKILL.md`, `smells.md` |
+| `codebase-design` | P2 | `SKILL.md` + sibling | `SKILL.md`, `reference.md` |
+| `diagnosing-bugs` | P2 | `SKILL.md` + sibling | `SKILL.md`, `phases.md` |
+| `domain-modeling` | P2/P15 Use when | Full `SKILL.md` | `SKILL.md` |
+| `git-guardrails-claude-code` | P2 | `SKILL.md` + sibling | `SKILL.md`, `reference.md` |
+| `grill-me` | P0/P15 | Full `SKILL.md` | `SKILL.md` |
+| `grill-with-docs` | P0 | Full `SKILL.md` | `SKILL.md` |
+| `grilling` | P15 | Full `SKILL.md` | `SKILL.md` |
+| `handoff` | P0/P15 | Full `SKILL.md` | `SKILL.md` |
+| `implement` | P0 exclusive | Full `SKILL.md` | `SKILL.md` |
+| `implement-spec` | P0/P15 | Full `SKILL.md` | `SKILL.md` |
+| `improve-codebase-architecture` | P2/P15 | Full `SKILL.md` | `SKILL.md` |
+| `loop-me` | P15 + #16 key | `SKILL.md` + `frontmatter.yaml` | `SKILL.md`, `frontmatter.yaml` |
+| `migrate-to-shoehorn` | P1 | `SKILL.md` + sibling | `SKILL.md`, `examples.md` |
+| `prototype` | P15 | Full `SKILL.md` | `SKILL.md` |
+| `research` | P15 | Full `SKILL.md` | `SKILL.md` |
+| `resolving-merge-conflicts` | P15 | Full `SKILL.md` | `SKILL.md` |
+| `retro` | P0 When not | Reconciled `SKILL.md` + `frontmatter.yaml` | `SKILL.md`, `frontmatter.yaml` |
+| `scaffold-exercises` | P1 | `SKILL.md` + sibling | `SKILL.md`, `reference.md` |
+| `setup-matt-pocock-skills` | P2 | `SKILL.md` + sibling | `SKILL.md`, `reference.md` |
+| `setup-pre-commit` | P2 | `SKILL.md` + sibling | `SKILL.md`, `reference.md` |
+| `setup-ts-deep-modules` | P1 | `SKILL.md` + sibling | `SKILL.md`, `reference.md` |
+| `tdd` | P2 Use when | Full `SKILL.md` | `SKILL.md` |
+| `teach` | P2 | `SKILL.md` + siblings | `SKILL.md`, `lessons.md`, `philosophy.md` |
+| `to-questionnaire` | P15 | Full `SKILL.md` | `SKILL.md` |
+| `to-spec` | P2/P15 | Full `SKILL.md` | `SKILL.md` |
+| `to-tickets` | P1 | `SKILL.md` + sibling | `SKILL.md`, `reference.md` |
+| `triage` | P2 | `SKILL.md` + sibling | `SKILL.md`, `reference.md` |
+| `wait-what` | P15 + #16 key | `SKILL.md` + `frontmatter.yaml` | `SKILL.md`, `frontmatter.yaml` |
+| `wayfinder` | P1 | `SKILL.md` + siblings | `SKILL.md`, `reference.md`, `fog-and-scope.md` |
+| `wizard` | P15 | Full `SKILL.md` | `SKILL.md` |
+| `writing-beats` | P0/P15 | Full `SKILL.md` | `SKILL.md` |
+| `writing-for-agents` | P15 | Full `SKILL.md` | `SKILL.md` |
+| `writing-fragments` | P0 | Full `SKILL.md` | `SKILL.md` |
+| `writing-shape` | P0/P15 | Full `SKILL.md` | `SKILL.md` |
+
+**Local durable (no overlay):** `ed-brainstorm`, `manage-ai-agent-config`, `security-review`, `verification-before-completion` — edit `Skills/` only.
+
+**Not promoted / unnecessary:**
+- No upstream-synced #12–#15 skill already matched upstream `SKILL.md` (preview showed updates on all edited names).
+- Deleted `ed-workflow` stays gone (nothing to overlay).
+- New upstream-only skill `pr` (seen in preview, not in lock yet) — out of scope; do not invent import without an explicit apply decision.
+
+### Mechanism tweak (mid-flight)
+
+`Scripts/overlays.mjs` apply order is now **full-file copies first, then `frontmatter.yaml` merge**, so keys in `frontmatter.yaml` win over keys inside an overlaid `SKILL.md`. Needed once mid-term started promoting full `SKILL.md` alongside the #16 `disable-model-invocation` seeds.
+
+### Process reflection
+
+| Question | Answer |
+| --- | --- |
+| Is promoting full `SKILL.md` into overlays sustainable, or only frontmatter + small patches? | **Hybrid, prefer thin.** Frontmatter-only for keys; sibling full-file for new reference files; **full `SKILL.md` only when body/structure must diverge** (progressive-disclosure routers, Use when/gates woven into body). Mass full-body overlays are honest but block upstream body upgrades until a manual reconcile — acceptable for the #12–#15 intentional localization set, not the default for every future tweak. A `LOCAL.md` appendix without auto-wiring is invisible; wiring would be a new merge mode — **not** added this pass. |
+| Skills where promotion is unnecessary (upstream already matches)? | **None** among #12–#15 upstream edits at promote time. Closest caution: `retro` had locally thinned upstream “Automated checks” / “Coding standards” wording — **reconciled** to upstream body + local `When not` before promote. Thin writing-* Completion / Use when blocks still promoted because next apply would wipe them and re-audit cost is real. |
+| Any process change mid-flight? | **Yes (small):** (1) overlay apply order files→frontmatter; (2) `retro` reconcile-before-promote rule when local removes upstream richness; (3) documented ownership split + correction-driven growth in Maintaining. No mega-router, no `ed-workflow`, no mass re-disclose, no noisy cron. |
+
+### Far-term (light)
+
+Documented optional **skill health check** and **overlay reconcile** as quiet event candidates in Maintaining. Post-upstream re-audit already exists. No scheduled routines created.
+
+### Residual mid-term class
+
+**Empty** for promote + docs. Later reconcile passes may refresh overlaid `SKILL.md` bodies when upstream preview shows valuable churn.

@@ -6,10 +6,12 @@
  * Layout (repo root):
  *   overlays/<skill-name>/frontmatter.yaml  — shallow-merge into SKILL.md frontmatter
  *   overlays/<skill-name>/<any-other-path>  — full-file replace into Skills/<skill-name>/
+ *                                          (including SKILL.md when body must diverge)
  *
- * `frontmatter.yaml` is never copied as a skill file. Apply fails loudly on missing
- * skills, unsafe paths, invalid YAML-ish frontmatter files, or missing SKILL.md when
- * a frontmatter overlay is present.
+ * Apply order: full-file copies first, then frontmatter merge (so frontmatter.yaml
+ * wins over keys inside an overlaid SKILL.md). `frontmatter.yaml` is never copied
+ * as a skill file. Apply fails loudly on missing skills, unsafe paths, invalid
+ * YAML-ish frontmatter files, or missing SKILL.md when a frontmatter overlay is present.
  */
 
 import fs from "node:fs";
@@ -143,6 +145,21 @@ export function applyOverlays(packageRoot, options = {}) {
     const frontmatterPath = path.join(overlayDir, FRONTMATTER_FILE);
     const hasFrontmatter = fs.existsSync(frontmatterPath);
 
+    // Full-file replaces first (including optional SKILL.md). Frontmatter merge
+    // runs after so frontmatter.yaml always wins over keys inside an overlaid
+    // SKILL.md (belt-and-suspenders for disable-model-invocation, etc.).
+    for (const source of overlayFiles) {
+      const relative = path.relative(overlayDir, source);
+      if (relative === FRONTMATTER_FILE) continue;
+      const destination = path.join(skillDir, relative);
+      assertInside(skillDir, destination);
+      if (!dryRun) {
+        fs.mkdirSync(path.dirname(destination), { recursive: true });
+        fs.copyFileSync(source, destination);
+      }
+      filesCopied += 1;
+    }
+
     if (hasFrontmatter) {
       const overlayFields = parseSimpleYamlObject(
         fs.readFileSync(frontmatterPath, "utf8"),
@@ -155,18 +172,6 @@ export function applyOverlays(packageRoot, options = {}) {
         if (!dryRun) fs.writeFileSync(skillFile, next, "utf8");
         frontmatterMerges += 1;
       }
-    }
-
-    for (const source of overlayFiles) {
-      const relative = path.relative(overlayDir, source);
-      if (relative === FRONTMATTER_FILE) continue;
-      const destination = path.join(skillDir, relative);
-      assertInside(skillDir, destination);
-      if (!dryRun) {
-        fs.mkdirSync(path.dirname(destination), { recursive: true });
-        fs.copyFileSync(source, destination);
-      }
-      filesCopied += 1;
     }
 
     applied.push(skillName);
