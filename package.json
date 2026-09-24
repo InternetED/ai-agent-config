@@ -32,8 +32,9 @@
   },
   "scripts": {
     "check": "node Scripts/sync.mjs check",
-    "test": "node Scripts/test.mjs && node Scripts/test-overlays.mjs",
+    "test": "node Scripts/test.mjs && node Scripts/test-overlays.mjs && node Scripts/test-skill-health.mjs",
     "upstreams": "node Scripts/sync-upstreams.mjs",
-    "overlays": "node Scripts/overlays.mjs"
+    "overlays": "node Scripts/overlays.mjs",
+    "skill-health": "node Scripts/skill-health.mjs"
   }
 }

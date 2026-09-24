@@ -112,8 +112,12 @@ adding a Skill or MCP server. Then run:
 
 ```sh
 npm run check
+npm run skill-health   # quiet when healthy; also part of npm test
 npm test
 npm pack --dry-run
 ```
+
+Maintainer event checklists (post-upstream re-audit, prune criteria, empty MCP
+catalog note) live in [Documentation~/Maintaining.md](Documentation~/Maintaining.md).
 
 Release tags use semantic versions and must match `package.json`.
