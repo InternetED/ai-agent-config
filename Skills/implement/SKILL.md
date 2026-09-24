@@ -10,7 +10,7 @@ Implement the work described by the user in the spec or tickets.
 ## When not
 
 - Multi-ticket task graph needing parallel worktrees and one closing PR → `implement-spec`.
-- Idea still vague or disputed → `ed-workflow` / `ed-brainstorm` or `grill-with-docs`.
+- Idea still vague or disputed → `ed-brainstorm`, `grill-with-docs`, or `ask-matt` (routing).
 - User only wants review or a commit → `code-review` or `ce-commit`.
 
 ## Steps

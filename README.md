@@ -41,7 +41,7 @@ configuration and stores environment-variable names, never credentials.
 - `Config/mcp.servers.json` contains vendor-neutral MCP definitions.
 - `Scripts/sync.mjs` validates, generates, and installs both client formats.
 
-The package includes 43 Skills: engineering workflows migrated from the former
+The package includes 42 Skills: engineering workflows migrated from the former
 `ed-engineering` plugin, plus the package-management Skill. It does not use a
 Codex plugin manifest or plugin installation lifecycle.
 
@@ -87,8 +87,8 @@ npm run upstreams
 npm run upstreams -- --apply
 ```
 
-`ed-brainstorm` and `ed-workflow` are local Skills and are never overwritten by
-the upstream updater.
+`ed-brainstorm` is a local Skill and is never overwritten by the upstream
+updater.
 
 ## Optional Unity installation
 

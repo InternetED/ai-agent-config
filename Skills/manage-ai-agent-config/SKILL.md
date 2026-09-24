@@ -22,8 +22,7 @@ the request explicitly requires a platform extension. For an MCP change, store
 environment-variable names rather than credential values.
 
 Do not change `upstreams.lock.json` unless the task is an upstream refresh.
-Local skills `ed-brainstorm` and `ed-workflow` must never be overwritten by the
-upstream updater.
+Local skill `ed-brainstorm` must never be overwritten by the upstream updater.
 
 Run `node Scripts/sync.mjs check` and `npm test` after changes. The task is
 complete when all authoritative inputs validate, generated Claude and Codex

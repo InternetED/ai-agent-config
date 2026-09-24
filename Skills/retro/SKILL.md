@@ -7,7 +7,7 @@ description: Retrospective on a coding session to improve the agent environment.
 
 - Diff/PR review → `code-review`.
 - Security findings → `security-review`.
-- Choosing the next build skill → `ed-workflow` / `ask-matt`.
+- Choosing the next build skill → `ask-matt` or a named skill (`ed-brainstorm`, `implement`, etc.).
 
 
 The user has asked for a **retrospective**. You are suggesting improvements to the coding agent's **environment** to improve future runs.

@@ -1,14 +1,10 @@
 ---
 name: ask-matt
-description: Router over the skills in this repo — which skill or flow fits. Use when the user is unsure which Matt-flow skill to run or wants the full idea→ship map; Not for Ed's short engineering router (prefer ed-workflow first for Ed engineering tasks).
+description: Router over the skills in this repo — which skill or flow fits. Use when the user is unsure which skill to run or wants the full idea→ship map; Not for a single already-chosen named skill.
 ---
 
 # Ask Matt
 
-
-## Relationship to ed-workflow
-
-`ed-workflow` is Ed's preferred **short** router for engineering idea→ship steps. Prefer `ed-workflow` first for Ed's engineering tasks; use this skill for the fuller Matt-flow map (on-ramps, prototypes, standalone skills).
 
 You don't remember every skill, so ask.
 
