@@ -1,7 +1,14 @@
 ---
 name: retro
-description: "Conduct a retrospective on a coding session."
+description: Retrospective on a coding session to improve the agent environment. Use when the user asks for a retro, postmortem, or session lessons-learned; Not for reviewing a code diff (use code-review).
 ---
+
+## When not
+
+- Diff/PR review → `code-review`.
+- Security findings → `security-review`.
+- Choosing the next build skill → `ed-workflow` / `ask-matt`.
+
 
 The user has asked for a **retrospective**. You are suggesting improvements to the coding agent's **environment** to improve future runs.
 

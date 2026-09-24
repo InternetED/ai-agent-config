@@ -52,7 +52,8 @@ Codex plugin manifest or plugin installation lifecycle.
   cycle; integration/e2e when that seam changes or at wrap-up. Read
   `CONTEXT.md` / test config first.
 - **implement** — Targeted tests every cycle; full suite only at end / before
-  commit/PR.
+  commit/PR. Does not auto-commit: propose via `ce-commit` and wait unless asked.
+  Exclusive vs `implement-spec` (multi-ticket PR factory).
 - **implement-spec** — Subagent failure: max 2 retries (3 attempts), then mark
   failed and continue the frontier. Per-ticket targeted test gate (self-report
   insufficient). Merger conflicts: preserve intents or stop and ask.

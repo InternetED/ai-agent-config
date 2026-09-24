@@ -1,6 +1,6 @@
 ---
 name: writing-beats
-description: Writing, exploit; assemble raw material into a journey of beats, grounding each term before a beat leans on it.
+description: Exploit writing by assembling raw material into a beat-by-beat journey. Use when the pile is fixed and the user wants choose-your-own-adventure beats; Not for exploring fragments or paragraph-only shaping (use writing-fragments / writing-shape).
 ---
 
 <what-to-do>
@@ -64,3 +64,7 @@ The article ends when the journey is complete, not when the pile is empty. Most 
 - If the user says "rewrite that beat" or "go back and try a different beat 3", do it: edit in place, leave the rest alone.
 
 </supporting-info>
+
+## Completion
+
+Done when the article file path is reported and the beat journey reaches a natural end or the user stops.
