@@ -5,7 +5,7 @@ description: Clarify an ambiguous software idea into agreed product and technica
 
 # Ed Brainstorm
 
-Turn a vague or consequential idea into a decision-complete brief that can be handed to `$to-spec`. Do not implement, create tickets, or commit changes.
+Turn a vague or consequential idea into a decision-complete brief that can be handed to `to-spec`. Do not implement, create tickets, or commit changes.
 
 ## Method
 
@@ -34,7 +34,7 @@ Ask the user to confirm or correct the synthesis. Do not silently treat unresolv
 
 ## Handoff
 
-- If the brief is settled, recommend `$to-spec`.
-- If terminology, domain rules, or constraints still need pressure-testing, recommend `$grill-with-docs`, then return to `$to-spec`.
-- If a spec already exists and is accepted, recommend `$to-tickets`.
+- If the brief is settled, recommend `to-spec`.
+- If terminology, domain rules, or constraints still need pressure-testing, recommend `grill-with-docs`, then return to `to-spec`.
+- If a spec already exists and is accepted, recommend `to-tickets`.
 - Never hand off to `ce-plan`; this collection uses Matt Pocock's spec and ticket workflow.

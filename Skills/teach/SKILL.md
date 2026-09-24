@@ -1,7 +1,13 @@
 ---
 name: teach
-description: Teach the user a new skill or concept, within this workspace.
+description: Teach a skill or concept across sessions in this workspace. Use when the user wants structured lessons, mission, and learning records here; Not for one-shot explanations with no teaching workspace.
 ---
+
+## When not
+
+- One-shot answer with no teaching workspace files → just answer; do not scaffold MISSION/lessons unless asked.
+- Coding implementation of a ticket → `implement`.
+
 
 The user has asked you to teach them something. This is a stateful request - they intend to learn the topic over multiple sessions.
 

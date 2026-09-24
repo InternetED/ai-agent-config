@@ -1,11 +1,17 @@
 ---
 name: verification-before-completion
-description: Use when about to claim work is complete, fixed, or passing, or before commit/PR — require a fresh verification command and its output before any success claim.
+description: Verify before claiming complete, fixed, or passing — and before commit/PR. Use when about to assert success; require a fresh verification command and its output. Not for exploratory runs that make no success claim.
 ---
 
 # Verification Before Completion
 
 **Evidence before claims.** No completion, fix, or "passing" language without a verification command you just ran in this turn.
+
+## When not
+
+- Mid-exploration or drafting with no success/completion claim → skip.
+- User explicitly asks for a hypothesis or plan only → no verification gate.
+- Still apply before any wording that implies the work is done, fixed, or green.
 
 ## Iron Law
 

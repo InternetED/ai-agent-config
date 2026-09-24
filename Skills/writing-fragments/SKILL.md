@@ -1,6 +1,6 @@
 ---
 name: writing-fragments
-description: "Writing, explore: mine raw fragments, no structure yet."
+description: Explore writing by mining raw fragments with no structure yet. Use when the user wants an explore pass or raw pile before shaping; Not for assembling beats or a finished article (use writing-beats / writing-shape).
 ---
 
 <what-to-do>
@@ -76,3 +76,7 @@ Before every write: re-read the file from disk. The user may have edited, reorde
 The user can say "cut the last one", "rewrite that one sharper", "merge those two" at any time. Treat those as first-class instructions.
 
 </supporting-info>
+
+## Completion
+
+Done when the fragments file path is reported and the explore pass stops on user request (no article structure imposed).

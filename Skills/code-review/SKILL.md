@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: "Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo's documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Runs both reviews in parallel sub-agents and reports them side by side. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to \"review since X\"."
+description: Review changes since a fixed point along Standards and Spec axes. Use when reviewing a branch, PR, WIP diff, or review-since a commit/tag; Not for pre-implementation design grilling (use grill-with-docs / ed-brainstorm).
 ---
 
 Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
@@ -13,6 +13,12 @@ Both axes run as **parallel sub-agents** so they don't pollute each other's cont
 **Exception:** if the diff is tiny (one or two files, or a handful of hunks), review both axes yourself in this session — do **not** spawn two sub-agents.
 
 The issue tracker should have been provided to you. If `docs/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`.
+
+## When not
+
+- No code diff yet / idea still unsettled → grill or spec skills, not review.
+- Security-focused pass only → `security-review`.
+- User only wants a commit message → `ce-commit`.
 
 ## Process
 

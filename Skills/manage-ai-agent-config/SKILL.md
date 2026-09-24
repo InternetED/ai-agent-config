@@ -1,6 +1,6 @@
 ---
 name: manage-ai-agent-config
-description: Add, update, remove, or validate shared MCP definitions and Agent Skills in the AI Agent Config authority repository.
+description: Add, update, remove, or validate shared MCP definitions and Agent Skills in this authority repo. Use when changing Skills/ or Config/mcp.servers.json here; Not for editing installed client copies under ~/.claude or ~/.codex.
 ---
 
 # Manage AI Agent Config
@@ -14,13 +14,17 @@ them as the source of a change.
 When installing, preserve the user's choice of scope. Use `--scope user` for
 user-level configuration or `--scope project` for repository-local
 configuration. Never install or update without an explicit scope, and never
-silently promote a project installation to user scope.
+silently promote a project installation to user scope. Never invent scopes
+beyond `user` and `project`.
 
 For a skill change, keep the skill portable across Claude Code and Codex unless
 the request explicitly requires a platform extension. For an MCP change, store
 environment-variable names rather than credential values.
 
-Run `npm run check` and `npm test` after changes. The task is complete when all
-authoritative inputs validate, generated Claude and Codex configurations
-represent the same enabled servers, and unrelated user configuration remains
-preserved by the integration test.
+Do not change `upstreams.lock.json` unless the task is an upstream refresh.
+Local skill `ed-brainstorm` must never be overwritten by the upstream updater.
+
+Run `node Scripts/sync.mjs check` and `npm test` after changes. The task is
+complete when all authoritative inputs validate, generated Claude and Codex
+configurations represent the same enabled servers, and unrelated user
+configuration remains preserved by the integration test.

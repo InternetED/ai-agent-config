@@ -41,7 +41,7 @@ configuration and stores environment-variable names, never credentials.
 - `Config/mcp.servers.json` contains vendor-neutral MCP definitions.
 - `Scripts/sync.mjs` validates, generates, and installs both client formats.
 
-The package includes 43 Skills: engineering workflows migrated from the former
+The package includes 42 Skills: engineering workflows migrated from the former
 `ed-engineering` plugin, plus the package-management Skill. It does not use a
 Codex plugin manifest or plugin installation lifecycle.
 
@@ -52,7 +52,8 @@ Codex plugin manifest or plugin installation lifecycle.
   cycle; integration/e2e when that seam changes or at wrap-up. Read
   `CONTEXT.md` / test config first.
 - **implement** — Targeted tests every cycle; full suite only at end / before
-  commit/PR.
+  commit/PR. Does not auto-commit: propose via `ce-commit` and wait unless asked.
+  Exclusive vs `implement-spec` (multi-ticket PR factory).
 - **implement-spec** — Subagent failure: max 2 retries (3 attempts), then mark
   failed and continue the frontier. Per-ticket targeted test gate (self-report
   insufficient). Merger conflicts: preserve intents or stop and ask.
@@ -86,8 +87,8 @@ npm run upstreams
 npm run upstreams -- --apply
 ```
 
-`ed-brainstorm` and `ed-workflow` are local Skills and are never overwritten by
-the upstream updater.
+`ed-brainstorm` is a local Skill and is never overwritten by the upstream
+updater.
 
 ## Optional Unity installation
 

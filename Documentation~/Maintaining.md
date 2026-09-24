@@ -37,8 +37,8 @@ also synchronize the result to both clients. You may test a specific branch or
 tag with `--matt-ref <ref>` or `--compound-ref <ref>`.
 
 The updater owns the Skill names recorded under each source in
-`upstreams.lock.json`. It must never overwrite the local `ed-brainstorm` or
-`ed-workflow` Skills. Review the resulting Git diff before release.
+`upstreams.lock.json`. It must never overwrite the local `ed-brainstorm`
+Skill. Review the resulting Git diff before release.
 
 ## Add an MCP server
 

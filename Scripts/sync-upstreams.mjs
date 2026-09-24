@@ -11,7 +11,7 @@ const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(scriptDirectory, "..");
 const skillsRoot = path.join(packageRoot, "Skills");
 const lockPath = path.join(packageRoot, "upstreams.lock.json");
-const protectedLocalNames = new Set(["ed-brainstorm", "ed-workflow"]);
+const protectedLocalNames = new Set(["ed-brainstorm"]);
 
 function fail(message) {
   throw new Error(message);
@@ -126,7 +126,7 @@ try {
     for (const candidate of changed) console.log(`  update  ${candidate.name} (${candidate.source})`);
     for (const name of removed) console.log(`  remove  ${name} (removed from mattpocock/skills)`);
   }
-  console.log("ed-brainstorm and ed-workflow are protected local skills and are never overwritten.");
+  console.log("ed-brainstorm is a protected local skill and is never overwritten.");
 
   if (!options.apply) {
     console.log("Preview only. Re-run with --apply to update the authoritative repository.");

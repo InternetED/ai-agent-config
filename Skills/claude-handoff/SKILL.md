@@ -1,6 +1,6 @@
 ---
 name: claude-handoff
-description: Hand the current conversation off to a fresh background agent that picks up the work immediately.
+description: Hand off to a fresh Claude Code background agent that starts immediately. Use when the user wants `claude --bg` continuation in this directory; Not for writing a handoff file for a later session (use handoff).
 ---
 
 Write a handoff summary of the current conversation so a fresh agent can continue the work. Instead of saving it, launch a background agent seeded with the summary as its prompt: `claude --bg --name "<descriptive name>" "<handoff summary>"`. It starts in the current working directory and returns immediately; the user manages it with `claude agents`.
@@ -14,3 +14,12 @@ Do not duplicate content already captured in other artifacts (specs, plans, ADRs
 Redact any sensitive information, such as API keys, passwords, or personally identifiable information, since the summary becomes the agent's prompt.
 
 If the user passed arguments, treat them as a description of what the next session will focus on and tailor the summary accordingly.
+
+## When not
+
+- Need a portable handoff **file** for another tool/session → `handoff`.
+- User has not asked to launch a background agent → write nothing and confirm first.
+
+## Completion
+
+Done when the background agent is launched with `--name` and the user is told how to manage it (`claude agents`), or when the user declines launch.

@@ -1,9 +1,10 @@
 ---
 name: ask-matt
-description: Ask which skill or flow fits your situation. A router over the skills in this repo.
+description: Router over the skills in this repo — which skill or flow fits. Use when the user is unsure which skill to run or wants the full idea→ship map; Not for a single already-chosen named skill.
 ---
 
 # Ask Matt
+
 
 You don't remember every skill, so ask.
 

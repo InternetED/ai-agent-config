@@ -1,6 +1,6 @@
 ---
 name: writing-shape
-description: "Writing, exploit: shape raw material into an article, paragraph by paragraph."
+description: Exploit writing by shaping raw material into an article paragraph by paragraph. Use when the pile is fixed and the user wants a structured article draft; Not for exploring fragments or beat-journey assembly (use writing-fragments / writing-beats).
 ---
 
 <what-to-do>
@@ -76,3 +76,7 @@ Append to the article file as each block is agreed. Re-read the file from disk b
 - Publishing, formatting for a specific platform, or adding frontmatter the user didn't ask for.
 
 </supporting-info>
+
+## Completion
+
+Done when the article file path is reported and shaping stops at a coherent draft or the user stops.
