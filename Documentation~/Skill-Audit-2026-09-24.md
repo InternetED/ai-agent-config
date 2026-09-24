@@ -28,10 +28,10 @@ Full read-only audit source (pre-PR): see also `/workspace/ai-agent-config-skill
 | `manage-ai-agent-config` | Paths match repo (`Documentation~/Maintaining.md`); scopes only `user`/`project`; never invent scopes. |
 | Weak-trigger batch | `retro`, `teach`, writing triad (`writing-fragments` / `writing-beats` / `writing-shape`), `ask-matt` — Use when + Not for. |
 
-## Deferred P1 (not in this PR)
+## Deferred follow-up
 
 - Upstream skill refresh (`npm run upstreams`) — re-audit changed descriptions only; never overwrite `ed-brainstorm`.
-- Fat skill progressive disclosure (extract refs): `wayfinder`, `to-tickets`, `scaffold-exercises`, `migrate-to-shoehorn`, `setup-ts-deep-modules` — deferred; no huge refactors in P0.
+- Fat-skill progressive disclosure for the focused five is complete in the P1 section below; this does not claim every size outlier is resolved.
 - Optional: `disable-model-invocation` for niche `wait-what` / `loop-me`; openai.yaml policy note in Maintaining; empty MCP `servers: {}` intent doc.
 
 ## Top 5 (from audit) — status
@@ -39,5 +39,24 @@ Full read-only audit source (pre-PR): see also `/workspace/ai-agent-config-skill
 1. implement vs implement-spec exclusive descriptions — **done**
 2. grill wrappers + handoff/claude-handoff — **done**
 3. code-review escape + normalize — **done**
-4. fat-skill progressive disclose — **deferred P1** (noted above)
+4. fat-skill progressive disclose — **done for the focused five** (not all outliers)
 5. weak-trigger batch + ed-workflow removal — **done**
+
+## P1 progressive disclosure (Draft)
+
+**Date:** 2026-09-24
+
+- Restructured `wayfinder`, `to-tickets`, `scaffold-exercises`, `migrate-to-shoehorn`, and `setup-ts-deep-modules` as thin `SKILL.md` routers with explicit Use when / Not for, workflows, human gates where applicable, verification, and load-on-demand pointers.
+- Split `wayfinder/reference.md` and `wayfinder/fog-and-scope.md`; `to-tickets/reference.md`; `scaffold-exercises/reference.md`; `migrate-to-shoehorn/examples.md`; and `setup-ts-deep-modules/reference.md`.
+- Sync expectation remains **Valid skills: 42**; no skill was added or removed.
+- These five skills are upstream-synced from `mattpocock-skills`. Their description and body edits may be overwritten by the next `npm run upstreams -- --apply`; re-audit and reapply intentional local progressive-disclosure changes after an upstream refresh.
+- Focused fat-skill progressive disclosure is **done** for these five, not for all size outliers.
+
+### Residual P2 backlog
+
+- `teach` remains fat despite its format files.
+- `diagnosing-bugs`.
+- `triage`.
+- `setup-matt-pocock-skills`.
+- Optional `disable-model-invocation` review for niche skills.
+- Re-audit descriptions and progressive disclosure after the upstream refresh.
