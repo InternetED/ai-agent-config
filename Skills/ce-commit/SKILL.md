@@ -1,13 +1,20 @@
 ---
 name: ce-commit
-description: Create a git commit with a clear, value-communicating message. Use when the user asks to commit/save staged or unstaged changes with a repo-appropriate message.
+description: Create a git commit with a clear, value-communicating message. Use when the user asks to commit/save staged or unstaged changes; Not for push or opening a PR.
 ---
 
 # Git Commit
 
-Create well-crafted local commit(s) from the current working tree. No push, no PR — use `ce-commit-push-pr` for the full ship flow.
+Create well-crafted local commit(s) from the current working tree. **No push and no PR** — this collection has no ship-flow companion skill; stop after local commit(s) unless the user separately asks to push or open a PR.
+
+## Use when / Not for
+
+- **Use when:** the user asks to commit or save current staged/unstaged work with a repo-appropriate message.
+- **Not for:** push, force-push, opening or merging a PR, or rewriting published history. Do not invent a push/PR companion skill name.
 
 **Done when:** each logical change is committed with an explicit file list and a message that states the outcome, and `git status` is clean of those changes. **Stop when:** the tree is clean (nothing to commit).
+
+**Human gate:** do not push. If the change set is surprisingly large or spans unrelated concerns, pause and confirm the split with the user before committing.
 
 ## Context
 
@@ -57,4 +64,4 @@ No shell parses the message with `-F`: a `$`, quotes, backticks, or a multi-line
 
 The trailing path list on `git commit` is load-bearing: a bare `git commit` takes the whole index, so anything already staged before this run (a caller's `exclude:` paths, or work the user staged and did not name) would ride into the commit. Naming the paths commits exactly the group and leaves other index entries alone.
 
-7. **Confirm** — `git status`; report hash(es) and subject(s).
+7. **Confirm** — `git status`; report hash(es) and subject(s). Verification = those hashes exist and `git status` is clean of the committed paths.

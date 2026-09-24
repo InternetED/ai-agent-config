@@ -85,6 +85,18 @@ Off the main flow entirely.
 - **`/teach`**: learn a concept over multiple sessions, using the current directory as a stateful workspace.
 - **`/writing-for-agents`** is the reference for writing documents agents consume: skills, AGENTS.md, pointed-at docs.
 
+
+## Local additions (this collection)
+
+Discoverability pointers for skills that live in this authority repo alongside the Matt map above. Prefer these names over inventing a mega-router.
+
+- **`/ed-brainstorm`**: explicit brainstorm of an ambiguous idea into agreed decisions before `to-spec`. User-invoked / explicit ask only.
+- **`/verification-before-completion`**: evidence gate before any complete/fixed/passing claim, commit, or PR.
+- **`/security-review`**: OWASP-oriented security pass over a diff (auth, input, secrets) — not a substitute for `/code-review`.
+- **`/ce-commit`**: local commit with a clear message; no push/PR.
+- **`/manage-ai-agent-config`**: edit `Skills/` or `Config/mcp.servers.json` in this authority repo only.
+- **`/retro`**: session retrospective to improve the agent environment (not a code-diff review).
+
 ## Precondition
 
 **`/setup-matt-pocock-skills`**: run before your first engineering flow to configure the issue tracker, triage labels, and doc layout the other skills assume. Custom issue trackers also work.

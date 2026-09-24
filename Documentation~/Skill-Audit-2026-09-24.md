@@ -83,3 +83,58 @@ All P2-touched skill directories are synchronized from `mattpocock-skills`. A la
 - `ask-matt`: its body is the router map/index, so further thinning would harm discoverability.
 - `disable-model-invocation`: deferred until a local convention and `Scripts/sync-upstreams.mjs` policy exist; upstream sync currently strips the key, so `wait-what` and `loop-me` remain model-reachable.
 - Post-upstream re-audit: future re-check only, not a blocker for completed structural work.
+
+## Authority gap pass (Draft)
+
+**Date:** 2026-09-24 (Asia/Taipei)
+**Branch:** `draft/skill-authority-align`
+**Base HEAD:** `3a361ee` (post #14)
+**Authorities:** `unicodef1wn/grokbot-field-notes` @ `02780c0` → `agents/SKILLS-AND-ROUTINES.md` (+ `VERIFICATION.md`); in-repo `Skills/writing-for-agents` (+ `SKILL-MECHANICS.md`); `Documentation~/Maintaining.md`; Cursor skill-authoring principles (reusable, trigger description, progressive disclosure).
+
+### Inventory vs checklist (gap table)
+
+| Skill | Gap class before | Action | Authority rule |
+| --- | --- | --- | --- |
+| `ce-commit` | Missing Not for; broken `ce-commit-push-pr` link; weak push gate | **Edit** | SKILLS-AND-ROUTINES “when / when not”; “approval”; no broken peer refs |
+| `ed-brainstorm` | Missing Use when / Not for body; `ce-plan` wording | **Edit** | when/when-not; human confirm gate; prefer local durable fix |
+| `grill-me` | Not for only in description | **Edit** | when/when-not in skill body |
+| `grilling` | Missing Not for | **Edit** | when/when-not; stay interviewer (approval before act) |
+| `handoff` | Not for only in description | **Edit** | when/when-not; completion = path reported |
+| `loop-me` | Weak description; missing Use/Not | **Edit** | description as trigger; when/when-not; how checked |
+| `manage-ai-agent-config` | Desc long; weak Draft/merge gate | **Edit** | local durable; Maintaining Draft not merge; verification = check+test |
+| `prototype` | Missing Not for + verification | **Edit** | when/when-not; how result checked |
+| `research` | Desc long; missing Not for + verification | **Edit** | when/when-not; how checked (cited file) |
+| `resolving-merge-conflicts` | Thin; missing Not for/verif/gate | **Edit** | when/when-not; error+approval not happy path only; how checked |
+| `security-review` | Missing Not for/verif/Critical gate | **Edit** | local durable; VERIFICATION + approval on Critical/High |
+| `to-questionnaire` | Weak description; missing Use/Not | **Edit** | when/when-not; how checked |
+| `to-spec` | Missing publish verification / gate polish | **Edit** | how checked; human gate on seams |
+| `wait-what` | Niche trigger only | **Edit** | when/when-not (still model-invoked; disable-model deferred) |
+| `wizard` | Desc too long; Not for implicit | **Edit** | description as trigger pointer; when/when-not; human confirm |
+| `writing-for-agents` | Missing Not for | **Edit** | when/when-not |
+| `writing-beats` / `writing-shape` | Desc long | **Edit** | writing-for-agents pointer pruning |
+| `implement-spec` | Desc long | **Edit** | pointer pruning |
+| `ask-matt` | Local skills undiscoverable | **Edit** | router skill (SKILL-MECHANICS); keep map, add local pointers — not a mega-router |
+
+### CRUD summary
+
+| Op | Items | Rationale |
+| --- | --- | --- |
+| **Add** | _(none)_ | No missing capability: verification, handoff, grilling, manage-config already exist. Prefer improve over invent. |
+| **Edit** | 19 skills listed above | Clear field-notes / writing-for-agents violations remaining after P0–P2. |
+| **Delete** | _(none)_ | No redundant/harmful skill safe to remove; thin wrappers kept; `ed-workflow` stays gone. |
+
+### Overwrite risks
+
+Upstream-synced (`mattpocock-skills` / `compound-engineering-plugin`) skills edited here may be overwritten by `npm run upstreams -- --apply`: `ce-commit`, `grill-me`, `grilling`, `handoff`, `loop-me`, `prototype`, `research`, `resolving-merge-conflicts`, `to-questionnaire`, `to-spec`, `wait-what`, `wizard`, `writing-for-agents`, `writing-beats`, `writing-shape`, `implement-spec`, `ask-matt`. Re-apply intentional local fixes after refresh.
+
+**Local-only (durable):** `ed-brainstorm`, `manage-ai-agent-config`, `security-review`, `verification-before-completion` (unchanged this pass except cross-links via ask-matt).
+
+### Intentionally deferred (justified)
+
+- `disable-model-invocation` for `wait-what` / `loop-me`: `Scripts/sync-upstreams.mjs` strips the key on import; no safe sync-policy fix in this PR.
+- Empty MCP `servers: {}` packaging note in Maintaining: docs polish, not an authority violation in Skills/.
+- Post-upstream re-audit after next `upstreams --apply`.
+
+### Residual backlog for “authority violations” class
+
+**Empty.** Remaining items are packaging/policy deferrals only (above).

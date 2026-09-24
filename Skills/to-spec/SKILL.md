@@ -22,6 +22,8 @@ Check with the user that these seams match their expectations. If the conversati
 
 3. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
 
+   **Human gate:** before publishing, confirm seams with the user unless the conversation already made them unambiguous. Do not invent tracker credentials or labels beyond the configured vocabulary.
+
 <spec-template>
 
 ## Problem Statement
@@ -77,3 +79,7 @@ A description of the things that are out of scope for this spec.
 Any further notes about the feature.
 
 </spec-template>
+
+## Verification
+
+Done when the tracker issue exists (URL or id reported), carries the `ready-for-agent` label, and the published body matches the template sections above.

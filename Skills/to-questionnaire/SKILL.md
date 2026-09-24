@@ -1,12 +1,16 @@
 ---
 name: to-questionnaire
-description: Turn a decision you can't fully answer into a questionnaire for someone else to fill in.
+description: Turn a blocked decision into a questionnaire for someone else. Use when the missing knowledge is in another person; Not for grilling yourself (use grill-me / grill-with-docs).
 ---
 
 Turn something the user can't answer alone into a **questionnaire**: a Markdown document they hand to one person to fill in async, or fill out together over a meeting. The recipient holds knowledge the user lacks; the questionnaire pulls it out of them.
 
-**Grill the send, not the subject.** Interview the user only about the _send_, which they can always answer: who it goes to, and what they need back. The questions in the document then target the **gap** between what the recipient knows and what the user needs.
+## Use when / Not for
 
+- **Use when:** a decision is blocked on knowledge held by someone else, and the user needs an async or meeting questionnaire to pull it out.
+- **Not for:** interviewing the user about the subject itself (use `grill-me` / `grill-with-docs`); implementing from partial answers.
+
+**Grill the send, not the subject.** Interview the user only about the _send_, which they can always answer: who it goes to, and what they need back. The questions in the document then target the **gap** between what the recipient knows and what the user needs.
 
 1. **Who is it going to?** Ask, in one exchange, the recipient's role, expertise, and relationship to the user. This fixes the questionnaire's tone and how much context it must carry. Done when you know who the recipient is and what they know that the user doesn't.
 
@@ -51,3 +55,7 @@ _Why this matters: it decides whether we provision for burst traffic now or defe
 A closing catch-all: anything we didn't ask that we should know?
 
 </questionnaire-template>
+
+## Verification
+
+Done when `to-questionnaire-<slug>.md` exists at the reported path and every item the user named in step 2 is covered by a question.

@@ -1,6 +1,6 @@
 ---
 name: writing-beats
-description: Exploit writing by assembling raw material into a beat-by-beat journey. Use when the pile is fixed and the user wants choose-your-own-adventure beats; Not for exploring fragments or paragraph-only shaping (use writing-fragments / writing-shape).
+description: Assemble raw material into beat-by-beat journey writing. Use when the pile is fixed and beats are wanted; Not for fragment explore or paragraph shaping.
 ---
 
 <what-to-do>

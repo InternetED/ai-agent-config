@@ -7,6 +7,11 @@ description: Clarify an ambiguous software idea into agreed product and technica
 
 Turn a vague or consequential idea into a decision-complete brief that can be handed to `to-spec`. Do not implement, create tickets, or commit changes.
 
+## Use when / Not for
+
+- **Use when:** the user explicitly invokes this skill or asks to brainstorm an ambiguous product/technical idea into agreed decisions.
+- **Not for:** implementing code, publishing a spec (`to-spec`), writing tickets (`to-tickets`), or pressure-testing domain rules already in a docs trail (`grill-with-docs`).
+
 ## Method
 
 1. Inspect the repository, relevant documentation, issue tracker context, domain glossary, and nearby implementation before asking questions that the available context can answer.
@@ -30,11 +35,11 @@ Present a concise synthesis with these headings:
 - Constraints and risks
 - Remaining open questions
 
-Ask the user to confirm or correct the synthesis. Do not silently treat unresolved choices as settled.
+**Human gate:** ask the user to confirm or correct the synthesis. Do not silently treat unresolved choices as settled.
 
 ## Handoff
 
 - If the brief is settled, recommend `to-spec`.
 - If terminology, domain rules, or constraints still need pressure-testing, recommend `grill-with-docs`, then return to `to-spec`.
 - If a spec already exists and is accepted, recommend `to-tickets`.
-- Never hand off to `ce-plan`; this collection uses Matt Pocock's spec and ticket workflow.
+- Never invent a `ce-plan` (or similar) handoff; this collection uses Matt Pocock's `to-spec` / `to-tickets` workflow.
