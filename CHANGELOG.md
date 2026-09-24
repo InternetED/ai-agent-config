@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.0] - 2026-09-24
+
+- Align skill guidance with authority boundaries, including Use when / Not for, verification, and human gates
+- Remove ed-workflow; reduce the skill count from 43 to 42
+- Add progressive disclosure with thin SKILL.md routers and sibling reference files for larger skills
+- Add local overlays with frontmatter merging, file replacement, and disable-model-invocation pass-through
+- Promote durable edits to upstream-synced skills into overlays
+- Add a quiet skill-health gate, prune criteria, and maintainer event checklists for npm and documentation
+- README documents 42 skills; pin example points at v0.6.0
+
 ## [0.5.0] - 2026-09-18
 
 - New skills: verification-before-completion, security-review
