@@ -7,6 +7,11 @@ description: Test-driven development. Use when the user wants to build features 
 
 TDD is the red → green loop. This skill is the reference that makes that loop produce tests worth keeping: what a good test is, where tests go, the anti-patterns, and the rules of the loop. Every section applies on every cycle: consult them before and during the loop, not after.
 
+## Use when / Not for
+
+- **Use when:** building a feature or fixing a known-cause bug test-first, using red–green–refactor, or adding behavior-focused integration tests.
+- **Not for:** diagnosing an unknown cause—use `diagnosing-bugs`; reviewing an existing diff without implementing it—use `code-review`.
+
 When exploring the codebase, read `CONTEXT.md` (if it exists) so test names and interface vocabulary match the project's domain language, and respect ADRs in the area you're touching.
 
 ## What a good test is

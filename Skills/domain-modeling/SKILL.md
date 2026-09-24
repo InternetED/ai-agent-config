@@ -7,6 +7,11 @@ description: Build and sharpen a project's domain model. Use when discussing cod
 
 Actively build and sharpen the project's domain model as you design. This is the *active* discipline: challenging terms, inventing edge-case scenarios, and writing the glossary and decisions down the moment they crystallise. (Merely *reading* `CONTEXT.md` for vocabulary is not this skill: that's a one-line habit any skill can do. This skill is for when you're changing the model, not just consuming it.)
 
+## Use when / Not for
+
+- **Use when:** defining or changing domain terminology, writing or revising `CONTEXT.md`, or recording and updating ADRs.
+- **Not for:** merely reading existing domain vocabulary, or implementing a settled ticket without changing the model.
+
 ## File structure
 
 Most repos have a single context:
