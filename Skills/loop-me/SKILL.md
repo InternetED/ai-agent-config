@@ -1,6 +1,7 @@
 ---
 name: loop-me
 description: Grill workflow specs for life loops in this workspace. Use when specifying recurring workflows under workflows/; Not for one-off feature specs (use grill-with-docs / to-spec).
+disable-model-invocation: true
 ---
 
 Run a stateful `/grilling` session whose only output is **workflow** specs. Use the grilling discipline (relentless, a round of questions at a time, a recommended answer attached to each) aimed at the vocabulary and goal below. Create, edit, and delete specs as the grilling resolves things.

@@ -1,0 +1,3 @@
+# Local durable frontmatter for wait-what.
+# Upstream already sets this; overlay re-asserts so a stripped or drifted tree recovers.
+disable-model-invocation: true

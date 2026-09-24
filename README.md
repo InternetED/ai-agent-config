@@ -88,7 +88,8 @@ npm run upstreams -- --apply
 ```
 
 `ed-brainstorm` is a local Skill and is never overwritten by the upstream
-updater.
+updater. Durable edits to upstream-synced skills live under `overlays/` and are
+re-applied automatically after `--apply` (see Maintaining).
 
 ## Optional Unity installation
 

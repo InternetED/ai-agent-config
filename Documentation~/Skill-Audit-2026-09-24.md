@@ -138,3 +138,40 @@ Upstream-synced (`mattpocock-skills` / `compound-engineering-plugin`) skills edi
 ### Residual backlog for “authority violations” class
 
 **Empty.** Remaining items are packaging/policy deferrals only (above).
+
+## Near-term: overlay layer + sync policy + re-audit (Draft)
+
+**Date:** 2026-09-24 (Asia/Taipei)
+**Branch:** `draft/skill-overlay-sync-policy`
+**Base HEAD:** `961906b` (post #15)
+**Goal:** Make intentional local authority edits to upstream-synced skills durable across `npm run upstreams -- --apply`, with an explicit `disable-model-invocation` policy and a lightweight post-apply re-audit.
+
+### Shipped
+
+| Item | What |
+| --- | --- |
+| Overlay mechanism | `overlays/<skill>/frontmatter.yaml` (merge) + other files (full replace); `Scripts/overlays.mjs`; hooked after `--apply`; `--overlays-only` / `npm run overlays` |
+| Sync policy | Pass through `disable-model-invocation`; keep stripping `argument-hint`; documented in Maintaining |
+| Seed overlays | `wait-what`, `loop-me` re-assert `disable-model-invocation: true` |
+| Re-audit docs | Event-driven checklist in `Documentation~/Maintaining.md` (apply → overlays → check/test → short authority skim → promote survivors) |
+| Tests | `Scripts/test-overlays.mjs` wired into `npm test` |
+
+### Not in this PR (deferred / mid-term)
+
+- Migrating every P1/P2/authority progressive-disclosure rewrite into full-file overlays (large copy set; do opportunistically when an apply would wipe a specific skill).
+- Forking upstream skills into `protectedLocalNames` beyond `ed-brainstorm`.
+- Recreating `ed-workflow`, another mass progressive-disclose pass, or inventing a mega-router.
+- Empty MCP catalog packaging note.
+
+### Process reflection
+
+| Question | Answer |
+| --- | --- |
+| Is overlay the right durability mechanism vs forking upstream skills locally? | **Yes for near-term.** Forking (`protectedLocalNames`) stops upstream file updates entirely and is right only for intentionally local skills (`ed-brainstorm`). Overlays keep receiving upstream copies, then re-assert local keys/files and fail loudly on missing targets. If mid-flight we had found that almost every synced skill was fully rewritten, forking or dropping upstream for those names would be simpler — that is not the case today. |
+| Does the chosen patch format survive real sync? | **Frontmatter merge + optional full-file replace**, not unified diffs. Diffs are brittle against upstream churn and hard for maintainers to edit. Full-file replace is honest about divergence; frontmatter merge covers the `disable-model-invocation` case without blocking upstream body updates. Proven by unit test + `--overlays-only` on the live tree. |
+| Is disable-model-invocation policy safe (won't break clients that ignore unknown keys)? | **Pass-through is safe.** `Scripts/sync.mjs` only requires `name` + `description`; unknown keys are ignored by the installer. Codex and other clients that do not understand the key leave it unused. Claude Code honors it. We still strip `argument-hint` (UI-only). Overlay re-injection makes the policy real for `wait-what` / `loop-me` even before the next full upstream refresh. |
+| Is the re-audit process lightweight enough people will run it? | **Event-driven, not cron.** Six short steps tied to `--apply` / overlay edits; no scheduled noise. If it grows past a skim + promote-survivors habit, trim the checklist rather than automate nagging. |
+
+### Residual near-term class
+
+**Empty** after this Draft lands (mechanism + policy + docs + seed overlays). Remaining durability work is opportunistic promotion of specific skill files into `overlays/` when an apply would otherwise drop them.

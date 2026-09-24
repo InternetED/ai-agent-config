@@ -28,6 +28,8 @@ environment-variable names rather than credential values.
 
 Do not change `upstreams.lock.json` unless the task is an upstream refresh.
 Local skill `ed-brainstorm` must never be overwritten by the upstream updater.
+Durable edits to upstream-synced skills belong under `overlays/` (see Maintaining);
+do not expect bare `Skills/` edits alone to survive `npm run upstreams -- --apply`.
 
 **Human gate:** open a **Draft** PR for skill/MCP authority changes; do not merge yourself. Do not push destructive git operations without an explicit user request.
 
