@@ -6,6 +6,7 @@ import path from "node:path";
 import process from "node:process";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { applyOverlays } from "./overlays.mjs";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(scriptDirectory, "..");
@@ -18,16 +19,26 @@ function fail(message) {
 }
 
 function parseArguments(argv) {
-  const options = { apply: false, install: false, mattRef: "main", compoundRef: "main" };
+  const options = {
+    apply: false,
+    install: false,
+    overlaysOnly: false,
+    mattRef: "main",
+    compoundRef: "main",
+  };
   while (argv.length > 0) {
     const argument = argv.shift();
     if (argument === "--apply") options.apply = true;
     else if (argument === "--install") options.install = true;
+    else if (argument === "--overlays-only") options.overlaysOnly = true;
     else if (argument === "--matt-ref") options.mattRef = argv.shift() ?? fail("--matt-ref requires a value");
     else if (argument === "--compound-ref") options.compoundRef = argv.shift() ?? fail("--compound-ref requires a value");
     else fail(`Unknown option: ${argument}`);
   }
   if (options.install && !options.apply) fail("--install requires --apply");
+  if (options.overlaysOnly && (options.apply || options.install)) {
+    fail("--overlays-only cannot be combined with --apply or --install");
+  }
   return options;
 }
 
@@ -53,10 +64,16 @@ function findSkillDirectories(root) {
   return found;
 }
 
+/**
+ * Portability policy for upstream frontmatter:
+ * - Pass through `disable-model-invocation` (clients that ignore unknown keys stay safe;
+ *   Claude Code honors it). Local overlays may also re-assert the key after sync.
+ * - Strip `argument-hint` (Claude-Code UI metadata; not portable across clients).
+ */
 function convertToPortableSkill(directory) {
   const skillFile = path.join(directory, "SKILL.md");
   if (!fs.existsSync(skillFile)) fail(`Missing SKILL.md in ${directory}`);
-  const contents = fs.readFileSync(skillFile, "utf8").replace(/^(disable-model-invocation|argument-hint):.*\r?\n/gm, "");
+  const contents = fs.readFileSync(skillFile, "utf8").replace(/^argument-hint:.*\r?\n/gm, "");
   fs.writeFileSync(skillFile, contents, "utf8");
 }
 
@@ -89,7 +106,32 @@ function writeLock(lock) {
   fs.writeFileSync(lockPath, `${JSON.stringify(lock, null, 2)}\n`, "utf8");
 }
 
+function runOverlays(label) {
+  const result = applyOverlays(packageRoot);
+  if (result.skills.length === 0) {
+    console.log(`${label}: no overlays present.`);
+  } else {
+    console.log(
+      `${label}: applied overlays for ${result.skills.length} skill(s) (${result.frontmatterMerges} frontmatter merge(s), ${result.filesCopied} file copies).`,
+    );
+    for (const name of result.skills) console.log(`  overlay  ${name}`);
+  }
+  return result;
+}
+
 const options = parseArguments(process.argv.slice(2));
+
+if (options.overlaysOnly) {
+  try {
+    runOverlays("Overlays-only");
+    run(process.execPath, [path.join(scriptDirectory, "sync.mjs"), "check"]);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exitCode = 1;
+  }
+  process.exit(process.exitCode ?? 0);
+}
+
 const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "ai-agent-config-upstreams-"));
 
 try {
@@ -127,9 +169,11 @@ try {
     for (const name of removed) console.log(`  remove  ${name} (removed from mattpocock/skills)`);
   }
   console.log("ed-brainstorm is a protected local skill and is never overwritten.");
+  console.log("disable-model-invocation is passed through from upstream; overlays/ may re-assert local keys after apply.");
 
   if (!options.apply) {
     console.log("Preview only. Re-run with --apply to update the authoritative repository.");
+    console.log("After apply, overlays under overlays/<skill>/ are re-applied automatically.");
     process.exit(0);
   }
 
@@ -145,9 +189,14 @@ try {
   lock.sources["compound-engineering-plugin"].skills = ["ce-commit"];
   writeLock(lock);
 
+  runOverlays("Post-upstream");
+
   run(process.execPath, [path.join(scriptDirectory, "sync.mjs"), "check"]);
   if (options.install) run(process.execPath, [path.join(scriptDirectory, "sync.mjs"), "install", "--prune"]);
   console.log(`Updated upstream lock to mattpocock/skills@${mattCommit} and compound-engineering-plugin@${compoundCommit}.`);
+} catch (error) {
+  console.error(`Error: ${error.message}`);
+  process.exitCode = 1;
 } finally {
   fs.rmSync(temporaryRoot, { recursive: true, force: true });
 }

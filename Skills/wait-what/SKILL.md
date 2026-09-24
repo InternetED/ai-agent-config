@@ -1,6 +1,7 @@
 ---
 name: wait-what
 description: Re-pitch the last message in plain language. Use when a reply did not land; Not for starting a new interview or changing the plan.
+disable-model-invocation: true
 ---
 
 ## Use when / Not for
