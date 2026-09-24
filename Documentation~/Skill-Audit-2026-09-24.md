@@ -30,9 +30,9 @@ Full read-only audit source (pre-PR): see also `/workspace/ai-agent-config-skill
 
 ## Deferred follow-up
 
-- Upstream skill refresh (`npm run upstreams`) — re-audit changed descriptions only; never overwrite `ed-brainstorm`.
-- Fat-skill progressive disclosure for the focused five is complete in the P1 section below; this does not claim every size outlier is resolved.
-- Optional: `disable-model-invocation` for niche `wait-what` / `loop-me`; openai.yaml policy note in Maintaining; empty MCP `servers: {}` intent doc.
+- `ask-matt` remains intentionally unsplit: it is a router whose body is the discoverable map/index, and thinning it would hide the routes it exists to expose.
+- `disable-model-invocation` remains intentionally deferred. `Scripts/sync-upstreams.mjs` strips that upstream key and no live skill uses it, so `wait-what` and `loop-me` remain model-reachable until the repository defines both a local convention and sync policy.
+- A post-upstream-refresh audit remains a future re-check only; the structural work below is complete and not blocked on that refresh.
 
 ## Top 5 (from audit) — status
 
@@ -52,11 +52,34 @@ Full read-only audit source (pre-PR): see also `/workspace/ai-agent-config-skill
 - These five skills are upstream-synced from `mattpocock-skills`. Their description and body edits may be overwritten by the next `npm run upstreams -- --apply`; re-audit and reapply intentional local progressive-disclosure changes after an upstream refresh.
 - Focused fat-skill progressive disclosure is **done** for these five, not for all size outliers.
 
-### Residual P2 backlog
+## P2 progressive disclosure (Draft)
 
-- `teach` remains fat despite its format files.
-- `diagnosing-bugs`.
-- `triage`.
-- `setup-matt-pocock-skills`.
-- Optional `disable-model-invocation` review for niche skills.
-- Re-audit descriptions and progressive disclosure after the upstream refresh.
+**Date:** 2026-09-24
+
+Restructured the remaining clear, low-risk fat-skill candidates as thin workflow routers. Must-run steps, human gates, and verification remain in each `SKILL.md`; detailed reference material loads only when its pointer condition applies.
+
+| Skill | SKILL.md lines | New sibling files |
+| --- | ---: | --- |
+| `teach` | 144 → 59 | `philosophy.md`, `lessons.md` |
+| `diagnosing-bugs` | 138 → 51 | `phases.md` |
+| `triage` | 111 → 66 | `reference.md` |
+| `setup-matt-pocock-skills` | 115 → 53 | `reference.md` |
+| `codebase-design` | 114 → 55 | `reference.md` |
+| `code-review` | 95 → 46 | `smells.md` |
+| `git-guardrails-claude-code` | 95 → 45 | `reference.md` |
+| `setup-pre-commit` | 91 → 39 | `reference.md` |
+
+### Done
+
+- Added explicit Use when / Not for guidance to all eight restructured skills and, as a small high-traffic residual, to `to-spec`, `improve-codebase-architecture`, `tdd`, and `domain-modeling`.
+- Preserved the `triage` AI-posting disclaimer and sequential workflow, the diagnosing Phase 1 gate, and the code-review requirement to paste the complete smell baseline into the Standards prompt.
+- Confirmed live skills contain no route to `ed-workflow`. Historical audit discussion remains only in this document.
+- Skill inventory remains **Valid skills: 42**; no skill was added or removed.
+
+All P2-touched skill directories are synchronized from `mattpocock-skills`. A later `npm run upstreams -- --apply` may overwrite descriptions, routers, sibling references, and trigger polish; review that diff and reapply intentional local progressive-disclosure changes after refresh.
+
+### Intentionally deferred
+
+- `ask-matt`: its body is the router map/index, so further thinning would harm discoverability.
+- `disable-model-invocation`: deferred until a local convention and `Scripts/sync-upstreams.mjs` policy exist; upstream sync currently strips the key, so `wait-what` and `loop-me` remain model-reachable.
+- Post-upstream re-audit: future re-check only, not a blocker for completed structural work.
