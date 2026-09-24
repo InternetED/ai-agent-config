@@ -1,6 +1,6 @@
 ---
 name: security-review
-description: Use when reviewing a diff or feature for security issues — auth, user input, secrets/tokens, before opening a PR, or when asked for a security pass (OWASP-oriented, severity-ranked findings).
+description: Security pass over a diff or feature (auth, input, secrets). Use before a security-sensitive PR or when asked for an OWASP-oriented review; Not for general code style review.
 ---
 
 # Security Review
@@ -8,6 +8,11 @@ description: Use when reviewing a diff or feature for security issues — auth, 
 A focused security pass over a change or feature. Stay concise: findings over lectures.
 
 When exploring the area, read `CONTEXT.md` and relevant ADRs if they exist.
+
+## Use when / Not for
+
+- **Use when:** reviewing a diff/feature for security issues — auth, untrusted input, secrets/tokens — before opening a PR that needs a security pass, or when asked for a security/OWASP review.
+- **Not for:** general style/architecture review (`code-review`), inventing CVEs you did not look up, or claiming "secure" without walking auth and input paths in the diff.
 
 ## When To Apply
 
@@ -62,6 +67,12 @@ For each finding:
 ```
 
 End with a one-line summary: counts per severity, or "No significant findings in scope."
+
+**Human gate:** if any Critical or High finding remains open, do not recommend merge until the user acknowledges the risk or the finding is fixed.
+
+## Verification
+
+Done when the full scope checklist was walked against the real diff, every finding cites a file/symbol, and the severity summary is present. "No significant findings" is valid only after that walk.
 
 ## Red Flags
 

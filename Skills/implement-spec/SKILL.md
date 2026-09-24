@@ -1,6 +1,6 @@
 ---
 name: implement-spec
-description: Implement a multi-ticket task-graph into one draft PR with parallel worktrees. Use when an accepted spec has blocking tickets and needs a single-branch PR factory; Not for a single bounded in-session build (use implement).
+description: Multi-ticket task-graph → one draft PR with worktrees. Use when an accepted spec needs a single-branch PR factory; Not for one in-session build (use implement).
 ---
 # Implement Spec
 

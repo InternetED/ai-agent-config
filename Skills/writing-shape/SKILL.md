@@ -1,6 +1,6 @@
 ---
 name: writing-shape
-description: Exploit writing by shaping raw material into an article paragraph by paragraph. Use when the pile is fixed and the user wants a structured article draft; Not for exploring fragments or beat-journey assembly (use writing-fragments / writing-beats).
+description: Shape raw material into an article paragraph by paragraph. Use when the pile is fixed and a draft article is wanted; Not for fragment explore or beat journeys.
 ---
 
 <what-to-do>

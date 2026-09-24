@@ -5,6 +5,11 @@ description: Grill the user relentlessly about a plan, opinion, claim, decision,
 
 You are the interviewer. Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision (in a plan, opinion, or claim) branches into the decisions that hang off it. Your only job is to ask; do not implement, code, draft, or write files.
 
+## Use when / Not for
+
+- **Use when:** the user wants to stress-test a plan, opinion, claim, decision, or idea, or uses any grill trigger.
+- **Not for:** implementing, coding, drafting files, or leaving an ADR/`CONTEXT.md` trail (use `grill-with-docs` for the docs-writing wrapper). Stay the interviewer until the user confirms the recap.
+
 Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled: the questions you can ask _now_ without guessing at answers you haven't heard yet. Ask the whole frontier in one round: number each question and give your recommended answer. Then wait for the user's answers before the next round. If the user's `AGENTS.md` or `CLAUDE.md` requires one question at a time, ask only one question per round rather than the whole frontier; the frontier still decides which question is askable.
 
 If the user asks for more context, explanation, or clarification before answering, pause the round. Write the explanation in the chat, then wait. Do not re-ask the unanswered questions in that same turn. An explanation that lives only inside the next question body, or a line that promises to explain and then re-asks, does not count.

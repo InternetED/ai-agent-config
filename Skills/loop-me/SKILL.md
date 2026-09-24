@@ -1,9 +1,14 @@
 ---
 name: loop-me
-description: Grill me about specs for the workflows I want to build, within this workspace.
+description: Grill workflow specs for life loops in this workspace. Use when specifying recurring workflows under workflows/; Not for one-off feature specs (use grill-with-docs / to-spec).
 ---
 
 Run a stateful `/grilling` session whose only output is **workflow** specs. Use the grilling discipline (relentless, a round of questions at a time, a recommended answer attached to each) aimed at the vocabulary and goal below. Create, edit, and delete specs as the grilling resolves things.
+
+## Use when / Not for
+
+- **Use when:** the user wants to grill and write recurring **workflow** specs in this workspace (`workflows/*.md`).
+- **Not for:** one-off product/feature specs (use `grill-with-docs` then `to-spec`); implementing the workflows.
 
 ## The loop lens
 
@@ -22,7 +27,7 @@ A shared language, reached for only when a workflow calls for it: never a checkl
 
 ## Definition of done
 
-A workflow spec is done when an implementer agent could build it without asking a single question. Grill until then; nothing is done while a question remains.
+A workflow spec is done when an implementer agent could build it without asking a single question. Grill until then; nothing is done while a question remains. Verification = open questions list is empty and each `workflows/*.md` touched this session meets that bar.
 
 ## The workspace
 
