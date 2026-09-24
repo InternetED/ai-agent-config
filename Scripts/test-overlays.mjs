@@ -59,6 +59,40 @@ Body line one.
   assert.equal(second.frontmatterMerges, 0);
   assert.equal(second.filesCopied, 1);
 
+  // Full SKILL.md replace then frontmatter.yaml wins on keys.
+  write(
+    path.join(skillsRoot, "replace-skill", "SKILL.md"),
+    `---
+name: replace-skill
+description: Upstream body.
+---
+
+Upstream only.
+`,
+  );
+  write(
+    path.join(overlaysRoot, "replace-skill", "SKILL.md"),
+    `---
+name: replace-skill
+description: Local durable body.
+disable-model-invocation: false
+---
+
+Local durable body.
+`,
+  );
+  write(
+    path.join(overlaysRoot, "replace-skill", "frontmatter.yaml"),
+    "disable-model-invocation: true\n",
+  );
+  const replaced = applyOverlays(temporaryRoot, { skillsRoot, overlaysRoot });
+  assert.ok(replaced.skills.includes("replace-skill"));
+  const replacedText = fs.readFileSync(path.join(skillsRoot, "replace-skill", "SKILL.md"), "utf8");
+  assert.match(replacedText, /Local durable body\./);
+  assert.match(replacedText, /disable-model-invocation: true/);
+  assert.doesNotMatch(replacedText, /Upstream only/);
+  assert.doesNotMatch(replacedText, /disable-model-invocation: false/);
+
   // Missing skill fails loudly.
   write(path.join(overlaysRoot, "missing-skill", "frontmatter.yaml"), "disable-model-invocation: true\n");
   assert.throws(
@@ -82,13 +116,22 @@ Hi.
   assert.match(merged, /disable-model-invocation: true/);
   assert.match(merged, /Hi\./);
 
-  // Live repo overlays for wait-what / loop-me exist and only use frontmatter.
+  // Live repo: wait-what / loop-me keep frontmatter + promoted SKILL.md.
   for (const name of ["wait-what", "loop-me"]) {
     const overlayDir = path.join(packageRoot, "overlays", name);
-    assert.equal(fs.existsSync(path.join(overlayDir, "frontmatter.yaml")), true, `${name} overlay missing`);
-    const names = fs.readdirSync(overlayDir);
-    assert.deepEqual(names, ["frontmatter.yaml"]);
+    assert.equal(fs.existsSync(path.join(overlayDir, "frontmatter.yaml")), true, `${name} frontmatter missing`);
+    assert.equal(fs.existsSync(path.join(overlayDir, "SKILL.md")), true, `${name} SKILL.md overlay missing`);
   }
+
+  // Live repo: at least one progressive-disclosure sibling overlay exists.
+  assert.equal(
+    fs.existsSync(path.join(packageRoot, "overlays", "wayfinder", "reference.md")),
+    true,
+  );
+  assert.equal(
+    fs.existsSync(path.join(packageRoot, "overlays", "code-review", "smells.md")),
+    true,
+  );
 
   console.log("Overlay unit tests passed.");
 } finally {

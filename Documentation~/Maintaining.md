@@ -17,6 +17,16 @@ Do not hand-edit generated output or installed files. Run the installer again
 with an explicit `--scope user` or `--scope project` instead. Never choose a
 scope on a user's behalf.
 
+### Ownership split (three layers)
+
+| Layer | What lives here | Survives `upstreams --apply`? |
+| --- | --- | --- |
+| **Upstream** | Skills named in `upstreams.lock.json` (`mattpocock-skills`, `compound-engineering-plugin`). Imported copies under `Skills/`. | Import overwrites `Skills/<name>/` for those names, then overlays re-apply. |
+| **Local durable** | Intentionally local skills: `ed-brainstorm`, `manage-ai-agent-config`, `security-review`, `verification-before-completion`. Not in the upstream overwrite set / protected. | Yes — edit `Skills/` directly; no overlay needed. |
+| **Overlay** | Durable local deltas on upstream-synced skills under `overlays/<skill>/`. | Yes — re-applied after every `--apply` and via `npm run overlays`. |
+
+Do **not** invent a mega-router skill. Do **not** recreate `ed-workflow`. Prefer improving an existing skill over adding a new one.
+
 ## Add a skill
 
 Create `Skills/<skill-name>/SKILL.md`. Use lowercase letters, digits, and
@@ -97,6 +107,32 @@ Rules:
 | Skill is rewritten for this package and must never be overwritten | Keep out of the upstream lock set / use `protectedLocalNames` (`ed-brainstorm`) |
 | One-off experiment you do not care about after the next apply | Edit `Skills/` only (will be wiped on apply) |
 
+### What to put in an overlay (prefer thin)
+
+| Local change | Overlay shape |
+| --- | --- |
+| Frontmatter keys only (`disable-model-invocation`, …) | `frontmatter.yaml` merge |
+| New sibling reference file (progressive disclosure) | Full-file replace of that sibling only, **plus** `SKILL.md` if the router must point at it |
+| Body / structure must diverge from upstream (thin router, Use when blocks, gates) | Full-file replace of `SKILL.md` (honest divergence) |
+| Key-only durability on top of an overlaid `SKILL.md` | Keep both: copy `SKILL.md`, then `frontmatter.yaml` (apply order: files first, merge second) |
+
+Do **not** duplicate an entire upstream skill body into `overlays/` when a frontmatter merge or a small sibling file would preserve the intent. Full `SKILL.md` overlays are reserved for intentional localization; they stop receiving upstream body edits until you manually reconcile.
+
+### Correction-driven growth
+
+Grow the skill set from **real failure modes**, not from speculative completeness:
+
+1. **Principle, not story.** Encode the reusable rule (when / when not, verification, human gate). Leave the incident narrative out of `SKILL.md`.
+2. **Prefer improve over invent.** Patch an existing skill or overlay before adding a new skill directory.
+3. **Choose the layer:**
+   - Failure is about a **local-only** concern → edit `Skills/<local-skill>/` (`ed-brainstorm`, `manage-ai-agent-config`, `security-review`, `verification-before-completion`).
+   - Failure is about an **upstream-synced** skill that must keep the fix → edit `Skills/` **and** promote the durable files into `overlays/<skill>/` in the same change.
+   - Failure is one-off / exploratory → edit `Skills/` only; accept wipe on next apply.
+4. **Validate:** `node Scripts/sync.mjs check`, `npm test`, and `npm run overlays` (idempotent).
+5. **Draft PR; do not merge** authority changes unless Ed asks.
+
+Record non-trivial promotions and layer choices in `Documentation~/Skill-Audit-*.md` when an audit pass lands.
+
 ## Post-upstream re-audit (event-driven)
 
 Run this checklist **when** an upstream apply lands (or when you intentionally
@@ -117,6 +153,16 @@ change overlays) — not on a noisy cron.
    drop forever → move into `overlays/<skill>/` in the same change set.
 6. **Stop when quiet:** if the diff is empty of authority regressions, do not
    invent follow-up work.
+
+## Far-term event candidates (optional, quiet)
+
+Keep routines **event-driven**. Do not add noisy scheduled jobs that chatter on no-op.
+
+| Candidate | Trigger | Notes |
+| --- | --- | --- |
+| Post-upstream re-audit | After `upstreams --apply` or overlay edits | **Exists** above — preferred. |
+| Skill health check | After a skill-authority Draft lands, or when sync/check fails | Optional skim: Use when/Not for present on high-traffic skills; overlay targets still exist; no `ed-workflow` routes; `npm test` green. Stay silent when there is nothing to fix. |
+| Overlay reconcile | When upstream preview shows large body churn on an overlaid `SKILL.md` | Manually merge upstream improvements into the overlay copy; do not auto-cron. |
 
 ## Add an MCP server
 
