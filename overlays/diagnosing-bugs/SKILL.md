@@ -7,7 +7,7 @@ description: Diagnose hard bugs and performance regressions through a tight feed
 
 A disciplined workflow for hard bugs. Skip later phases only when you can justify it; **never skip Phase 1: Build a feedback loop**.
 
-When exploring the codebase, read `CONTEXT.md` if present and check ADRs in the area being changed.
+When exploring the codebase, read `GLOSSARY.md` if present and check ADRs in the area being changed.
 
 ## Use when / Not for
 

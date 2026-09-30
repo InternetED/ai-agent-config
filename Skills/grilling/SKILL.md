@@ -8,7 +8,7 @@ You are the interviewer. Interview the user relentlessly until you reach a share
 ## Use when / Not for
 
 - **Use when:** the user wants to stress-test a plan, opinion, claim, decision, or idea, or uses any grill trigger.
-- **Not for:** implementing, coding, drafting files, or leaving an ADR/`CONTEXT.md` trail (use `grill-with-docs` for the docs-writing wrapper). Stay the interviewer until the user confirms the recap.
+- **Not for:** implementing, coding, drafting files, or leaving an ADR/`GLOSSARY.md` trail (use `grill-with-docs` for the docs-writing wrapper). Stay the interviewer until the user confirms the recap.
 
 Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled: the questions you can ask _now_ without guessing at answers you haven't heard yet. Ask the whole frontier in one round: number each question and give your recommended answer. Then wait for the user's answers before the next round. If the user's `AGENTS.md` or `CLAUDE.md` requires one question at a time, ask only one question per round rather than the whole frontier; the frontier still decides which question is askable.
 

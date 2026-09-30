@@ -48,7 +48,7 @@ Interpret natural-language requests such as “Show me anything that needs my at
 1. **Gather context.** Read the complete thread, labels, authorship, dates, prior triage notes, and PR diff when applicable. Use the domain glossary and relevant ADRs. Search by domain concept for an existing implementation and inspect `.out-of-scope/*.md` for prior rejection.
 2. **Recommend.** Present category and state with reasoning and a relevant codebase summary, including the redundancy and prior-rejection checks. Wait for maintainer direction.
 3. **Verify.** Reproduce a bug from the report, or check out a PR and run relevant commands. Report confirmed with code path, failed, or insufficient detail.
-4. **Grill if needed.** Call the Skill tool for both `grilling` and `domain-modeling`; ask one round at a time and update `CONTEXT.md` or ADRs as decisions land.
+4. **Grill if needed.** Call the Skill tool for both `grilling` and `domain-modeling`; ask one round at a time and update `GLOSSARY.md` or ADRs as decisions land.
 5. **Apply the outcome.** Post the required brief or notes, set exactly one category and state, and close `wontfix` items with the appropriate explanation or out-of-scope record.
 
 ## Quick state override

@@ -8,7 +8,7 @@ Read the repository's current state rather than assuming it:
 
 - `git remote -v` and `.git/config`: hosting provider and repository.
 - Root `AGENTS.md` and `CLAUDE.md`: which exists, and whether either already contains `## Agent skills`.
-- Root `CONTEXT.md` and `CONTEXT-MAP.md`.
+- Root `GLOSSARY.md` and `GLOSSARY-MAP.md`.
 - `docs/adr/` and any `src/*/docs/adr/` directories.
 - `docs/agents/`: prior setup output.
 - `.scratch/`: evidence of a local-markdown tracker convention.
@@ -40,9 +40,9 @@ The five canonical roles default to identically named labels: `needs-triage`, `n
 
 ## Section C: domain docs
 
-Default to **single-context**: one root `CONTEXT.md` plus root `docs/adr/`. This fits almost every repository and requires no question.
+Default to **single-context**: one root `GLOSSARY.md` plus root `docs/adr/`. This fits almost every repository and requires no question.
 
-Offer **multi-context** only when exploration found monorepo signals. It uses a root `CONTEXT-MAP.md` pointing to per-context `CONTEXT.md` files. Ask which layout the user wants.
+Offer **multi-context** only when exploration found monorepo signals. It uses a root `GLOSSARY-MAP.md` pointing to per-context `GLOSSARY.md` files. Ask which layout the user wants.
 
 ## Draft Agent skills block
 

@@ -47,16 +47,24 @@ Codex plugin manifest or plugin installation lifecycle.
 
 ### Recent skill updates (on main)
 
+- **pr** (imported) — Shapes PR bodies around a compact visual summary,
+  before/after evidence, and an explicit merge-danger call while retaining Draft
+  and human gates.
+- **GLOSSARY convention** — Domain vocabulary files now use `GLOSSARY.md`,
+  `GLOSSARY-MAP.md`, and `GLOSSARY-FORMAT.md` across imported skills and
+  durable overlays.
+- **implement-spec** / **ask-matt** — Selectively absorb upstream integration-
+  branch orchestration and `pr` / `retro` routing while preserving Ed retry,
+  verification, Draft, local-skill, and human gates.
+- **upstream provenance** — Pin mattpocock/skills v1.3 at `d81f3a1`; retain
+  intentional overlay differences and local-only skills.
 - **tdd** — Targeted tests only each red→green cycle (path/`-t`); never default
   to the full suite. Full suite only before commit/PR or when asked. Unit every
   cycle; integration/e2e when that seam changes or at wrap-up. Read
-  `CONTEXT.md` / test config first.
+  `GLOSSARY.md` / test config first.
 - **implement** — Targeted tests every cycle; full suite only at end / before
   commit/PR. Does not auto-commit: propose via `ce-commit` and wait unless asked.
   Exclusive vs `implement-spec` (multi-ticket PR factory).
-- **implement-spec** — Subagent failure: max 2 retries (3 attempts), then mark
-  failed and continue the frontier. Per-ticket targeted test gate (self-report
-  insufficient). Merger conflicts: preserve intents or stop and ask.
 - **verification-before-completion** (new) — No completion / fixed / passing
   claims without fresh command evidence; prefer targeted verification.
 - **security-review** (new) — OWASP-oriented pass: secrets, authz, injection,
@@ -65,8 +73,6 @@ Codex plugin manifest or plugin installation lifecycle.
   review both axes in-session; do not spawn two sub-agents.
 - **diagnosing-bugs** — Phases may be skipped when justified; Phase 1 (feedback
   loop) is never optional.
-- **resolving-merge-conflicts** — Run checks relevant to conflicted files, not
-  the full suite by default.
 - **to-spec** / **to-tickets** — Skip the confirmation quiz when the
   conversation already made requirements / breakdown unambiguous.
 

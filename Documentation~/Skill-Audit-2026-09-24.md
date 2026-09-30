@@ -104,7 +104,7 @@ All P2-touched skill directories are synchronized from `mattpocock-skills`. A la
 | `manage-ai-agent-config` | Desc long; weak Draft/merge gate | **Edit** | local durable; Maintaining Draft not merge; verification = check+test |
 | `prototype` | Missing Not for + verification | **Edit** | when/when-not; how result checked |
 | `research` | Desc long; missing Not for + verification | **Edit** | when/when-not; how checked (cited file) |
-| `resolving-merge-conflicts` | Thin; missing Not for/verif/gate | **Edit** | when/when-not; error+approval not happy path only; how checked |
+| `resolving-merge-conflicts` | Removed by upstream v1.3 | **Removed (2026-09-30)** | Explicit Ed decision; Skill and overlay deleted |
 | `security-review` | Missing Not for/verif/Critical gate | **Edit** | local durable; VERIFICATION + approval on Critical/High |
 | `to-questionnaire` | Weak description; missing Use/Not | **Edit** | when/when-not; how checked |
 | `to-spec` | Missing publish verification / gate polish | **Edit** | how checked; human gate on seams |
@@ -125,7 +125,7 @@ All P2-touched skill directories are synchronized from `mattpocock-skills`. A la
 
 ### Overwrite risks
 
-Upstream-synced (`mattpocock-skills` / `compound-engineering-plugin`) skills edited here may be overwritten by `npm run upstreams -- --apply`: `ce-commit`, `grill-me`, `grilling`, `handoff`, `loop-me`, `prototype`, `research`, `resolving-merge-conflicts`, `to-questionnaire`, `to-spec`, `wait-what`, `wizard`, `writing-for-agents`, `writing-beats`, `writing-shape`, `implement-spec`, `ask-matt`. Re-apply intentional local fixes after refresh.
+Upstream-synced (`mattpocock-skills` / `compound-engineering-plugin`) skills edited here may be overwritten by `npm run upstreams -- --apply`: `ce-commit`, `grill-me`, `grilling`, `handoff`, `loop-me`, `prototype`, `research`, `to-questionnaire`, `to-spec`, `wait-what`, `wizard`, `writing-for-agents`, `writing-beats`, `writing-shape`, `implement-spec`, `ask-matt`. Re-apply intentional local fixes after refresh.
 
 **Local-only (durable):** `ed-brainstorm`, `manage-ai-agent-config`, `security-review`, `verification-before-completion` (unchanged this pass except cross-links via ask-matt).
 
@@ -208,7 +208,7 @@ Upstream-synced skills edited in #12–#15 that were **only in `Skills/`** befor
 | `migrate-to-shoehorn` | P1 | `SKILL.md` + sibling | `SKILL.md`, `examples.md` |
 | `prototype` | P15 | Full `SKILL.md` | `SKILL.md` |
 | `research` | P15 | Full `SKILL.md` | `SKILL.md` |
-| `resolving-merge-conflicts` | P15 | Full `SKILL.md` | `SKILL.md` |
+| `resolving-merge-conflicts` | Removed 2026-09-30 | Overlay deleted | — |
 | `retro` | P0 When not | Reconciled `SKILL.md` + `frontmatter.yaml` | `SKILL.md`, `frontmatter.yaml` |
 | `scaffold-exercises` | P1 | `SKILL.md` + sibling | `SKILL.md`, `reference.md` |
 | `setup-matt-pocock-skills` | P2 | `SKILL.md` + sibling | `SKILL.md`, `reference.md` |
