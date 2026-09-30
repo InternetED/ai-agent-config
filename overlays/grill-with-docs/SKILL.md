@@ -7,4 +7,4 @@ Call the Skill tool twice, for "grilling" and "domain-modeling".
 
 ## Completion
 
-Done when the interview has sharpened the plan and durable docs (ADR/glossary/`CONTEXT.md` as produced by the called skills) reflect the settled decisions, or the user stops.
+Done when the interview has sharpened the plan and durable docs (ADR/glossary/`GLOSSARY.md` as produced by the called skills) reflect the settled decisions, or the user stops.

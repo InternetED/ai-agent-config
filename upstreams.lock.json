@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-03",
+  "updatedAt": "2026-09-30",
   "sources": {
     "mattpocock-skills": {
       "repository": "https://github.com/mattpocock/skills.git",
-      "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
+      "commit": "d81f3a183412e71a5b1e84ca21bc1a35eea03a60",
       "paths": [
         "skills/*/*"
       ],
@@ -26,9 +26,9 @@
         "improve-codebase-architecture",
         "loop-me",
         "migrate-to-shoehorn",
+        "pr",
         "prototype",
         "research",
-        "resolving-merge-conflicts",
         "retro",
         "scaffold-exercises",
         "setup-matt-pocock-skills",
@@ -51,7 +51,7 @@
     },
     "compound-engineering-plugin": {
       "repository": "https://github.com/everyinc/compound-engineering-plugin.git",
-      "commit": "37eed42548189fcecbcb9333c8268d2cb4163c5d",
+      "commit": "89408fddf8dff7703e512b14d0cfcdc9b97a5019",
       "paths": [
         "skills/ce-commit"
       ],

@@ -12,7 +12,7 @@ TDD is the red → green loop. This skill is the reference that makes that loop 
 - **Use when:** building a feature or fixing a known-cause bug test-first, using red–green–refactor, or adding behavior-focused integration tests.
 - **Not for:** diagnosing an unknown cause—use `diagnosing-bugs`; reviewing an existing diff without implementing it—use `code-review`.
 
-When exploring the codebase, read `CONTEXT.md` (if it exists) so test names and interface vocabulary match the project's domain language, and respect ADRs in the area you're touching.
+When exploring the codebase, read `GLOSSARY.md` (if it exists) so test names and interface vocabulary match the project's domain language, and respect ADRs in the area you're touching.
 
 ## What a good test is
 
@@ -49,4 +49,4 @@ Keep the red → green loop fast. Writing tests and code is cheap; waiting on a 
 - **Targeted runs only.** Each red → green cycle, run only the related test file or test name (path filter or `-t` / equivalent). Never default to the full suite.
 - **Full suite is rare.** Run the entire suite only before commit, before opening a PR, or when the user explicitly asks.
 - **Unit vs integration/e2e.** Unit tests should finish in seconds — run them every cycle. Integration and e2e are slow — run them only when the change touches that seam, or at wrap-up before commit/PR.
-- **Read project guidance first.** If `CONTEXT.md` or a test config (e.g. `vitest.config.*`, `jest.config.*`, `package.json` scripts) exists, read it and choose the project's intended commands and filters.
+- **Read project guidance first.** If `GLOSSARY.md` or a test config (e.g. `vitest.config.*`, `jest.config.*`, `package.json` scripts) exists, read it and choose the project's intended commands and filters.

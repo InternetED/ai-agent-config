@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+- Reconcile mattpocock/skills v1.3: import `pr` with a thin authority overlay, remove `resolving-merge-conflicts`, and pin upstream provenance to `d81f3a1`.
+- Rename domain glossary files from CONTEXT to GLOSSARY across imported skills, durable overlays, and supporting references.
+- Selectively absorb `implement-spec` integration-branch orchestration and `ask-matt` routing for `implement-spec`, `pr`, and `retro` while retaining Draft, verification, local-skill, and human gates.
+- Preserve intentional Ed differences: `ce-commit` wording, overlay-preview noise, local-only skills, and the deletion of `ed-workflow`.
+
 ## [0.6.0] - 2026-09-24
 
 - Align skill guidance with authority boundaries, including Use when / Not for, verification, and human gates
@@ -15,7 +22,7 @@
 - New skills: verification-before-completion, security-review
 - Harden implement-spec (retry, per-ticket test gate, merger conflict handling)
 - TDD/implement: prefer targeted tests
-- Tighten code-review / diagnosing-bugs / resolving-merge-conflicts / to-spec / to-tickets guidance
+- Tighten code-review / diagnosing-bugs / to-spec / to-tickets guidance
 - Improve grill-me / grilling from Matt Pocock feedback
 - README documents 43 skills
 

@@ -7,7 +7,7 @@ description: Security pass over a diff or feature (auth, input, secrets). Use be
 
 A focused security pass over a change or feature. Stay concise: findings over lectures.
 
-When exploring the area, read `CONTEXT.md` and relevant ADRs if they exist.
+When exploring the area, read `GLOSSARY.md` and relevant ADRs if they exist.
 
 ## Use when / Not for
 

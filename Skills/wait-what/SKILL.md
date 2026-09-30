@@ -9,4 +9,4 @@ disable-model-invocation: true
 - **Use when:** the last agent message did not land and the user needs a clearer re-pitch mid-conversation.
 - **Not for:** starting a new grill, changing scope, or rewriting settled decisions.
 
-Wait, I don't understand where you've got to here. Re-pitch that: give me a little bit of context, talk in ASD-STE100 Simplified Technical English, and use the ubiquitous language from `CONTEXT.md` (follow `CONTEXT-MAP.md` to the right one if the repo has more than one).
+Wait, I don't understand where you've got to here. Re-pitch that: give me a little bit of context, talk in ASD-STE100 Simplified Technical English, and use the ubiquitous language from `GLOSSARY.md` (follow `GLOSSARY-MAP.md` to the right one if the repo has more than one).
