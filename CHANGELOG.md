@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Automate stable GitHub tags and Releases after successful main validation; skip published versions, preserve existing tags, and use version-specific changelog notes with job-scoped permissions.
+
 ## [0.7.0] - 2026-10-02
 
 - Add selected Anthropic `frontend-design` and `mcp-builder` Skills with complete supporting resources, pinned provenance, and Apache-2.0 licenses; preserve scoped frontend routing in a durable overlay and exclude `skill-creator` after confirming a review-page script-injection risk.

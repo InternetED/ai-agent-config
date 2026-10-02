@@ -264,7 +264,26 @@ repositories and URL rewrites; they do not fetch from the network.
 
 ## Release
 
-Update `package.json` and `CHANGELOG.md`, commit the change, and tag the same
-semantic version. The public Git tag can be executed directly with `npx`; the
-optional OpenUPM listing reads the same tags and requires the tag version to
-match `package.json`.
+Update `package.json`, add a dated version section to `CHANGELOG.md`, and update
+the pinned npx example in `README.md`. Merge these changes into `main`; do not
+manually create a tag or GitHub Release.
+
+`.github/workflows/validate.yml` runs the existing checks, tests, and packaging
+validation. Only a successful `push` to `main` can run the release job. It uses
+the built-in `GITHUB_TOKEN` with job-scoped `contents: write`; no npm token or
+registry publishing is involved.
+
+For a new stable version, `.github/scripts/release.cjs` creates `v<VERSION>` at
+the validated commit and publishes a GitHub Release using that version
+section's changelog notes. An already published stable release is skipped, so
+ordinary merges without a version bump do not republish. Draft/prerelease
+collisions fail for manual resolution.
+
+If publication fails, re-run the failed workflow at the same commit. An
+existing lightweight or annotated tag can complete publication only if it
+resolves to that commit; a tag pointing elsewhere is never moved. Corrections
+to a published release require a new version.
+
+The public Git tag can be executed directly with `npx`; the optional OpenUPM
+listing reads the same tags and requires the tag version to match
+`package.json`.
