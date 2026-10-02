@@ -86,6 +86,33 @@ Body.
   result = runHealth(fixture);
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /overlay skill mismatch.*name="other"/);
+
+  // A full SKILL.md overlay must have frontmatter and an effective name.
+  write(path.join(fixture, "overlays", "demo", "SKILL.md"), "No frontmatter.\n");
+  result = runHealth(fixture);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /overlay skill missing frontmatter: overlays\/demo\/SKILL.md/);
+
+  write(
+    path.join(fixture, "overlays", "demo", "SKILL.md"),
+    `---
+description: Overlay body. Use when testing overlays.
+---
+
+Body.
+`,
+  );
+  result = runHealth(fixture);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /overlay skill missing name: overlays\/demo\/SKILL.md/);
+
+  // frontmatter.yaml contributes to the effective replacement document.
+  write(
+    path.join(fixture, "overlays", "demo", "frontmatter.yaml"),
+    "  name: demo\ndisable-model-invocation: true\n",
+  );
+  result = runHealth(fixture);
+  assert.equal(result.status, 0, `effective overlay name failed:\n${result.stderr}`);
   fs.unlinkSync(path.join(fixture, "overlays", "demo", "SKILL.md"));
 
   // $ed-workflow route.

@@ -110,17 +110,10 @@ function listOverlayFiles(overlayDir) {
 }
 
 /**
- * Apply every overlay under overlays/ onto Skills/.
- * @returns {{ skills: string[], frontmatterMerges: number, filesCopied: number }}
+ * Validate every overlay before an apply can write a file.
  */
-export function applyOverlays(packageRoot, options = {}) {
-  const overlaysRoot = options.overlaysRoot ?? path.join(packageRoot, "overlays");
-  const skillsRoot = options.skillsRoot ?? path.join(packageRoot, "Skills");
-  const dryRun = Boolean(options.dryRun);
-
-  if (!fs.existsSync(overlaysRoot)) {
-    return { skills: [], frontmatterMerges: 0, filesCopied: 0 };
-  }
+function planOverlays(overlaysRoot, skillsRoot) {
+  if (!fs.existsSync(overlaysRoot)) return [];
 
   const skillNames = fs
     .readdirSync(overlaysRoot, { withFileTypes: true })
@@ -128,54 +121,78 @@ export function applyOverlays(packageRoot, options = {}) {
     .map((entry) => entry.name)
     .sort();
 
-  let frontmatterMerges = 0;
-  let filesCopied = 0;
-  const applied = [];
-
+  const plans = [];
   for (const skillName of skillNames) {
     if (!/^[a-z0-9-]+$/.test(skillName)) fail(`Unsafe overlay skill name: ${skillName}`);
     const overlayDir = path.join(overlaysRoot, skillName);
     const skillDir = path.join(skillsRoot, skillName);
+    const skillFile = path.join(skillDir, "SKILL.md");
     if (!fs.existsSync(skillDir)) fail(`Overlay targets missing skill: ${skillName}`);
-    if (!fs.existsSync(path.join(skillDir, "SKILL.md"))) {
-      fail(`Overlay skill is missing SKILL.md: ${skillName}`);
-    }
+    if (!fs.existsSync(skillFile)) fail(`Overlay skill is missing SKILL.md: ${skillName}`);
 
-    const overlayFiles = listOverlayFiles(overlayDir);
-    const frontmatterPath = path.join(overlayDir, FRONTMATTER_FILE);
-    const hasFrontmatter = fs.existsSync(frontmatterPath);
-
-    // Full-file replaces first (including optional SKILL.md). Frontmatter merge
-    // runs after so frontmatter.yaml always wins over keys inside an overlaid
-    // SKILL.md (belt-and-suspenders for disable-model-invocation, etc.).
-    for (const source of overlayFiles) {
+    const files = [];
+    let replacementSkillContents = null;
+    for (const source of listOverlayFiles(overlayDir)) {
       const relative = path.relative(overlayDir, source);
       if (relative === FRONTMATTER_FILE) continue;
       const destination = path.join(skillDir, relative);
       assertInside(skillDir, destination);
+      fs.accessSync(source, fs.constants.R_OK);
+      if (relative === "SKILL.md") replacementSkillContents = fs.readFileSync(source, "utf8");
+      files.push({ source, destination });
+    }
+
+    let merge = null;
+    const frontmatterPath = path.join(overlayDir, FRONTMATTER_FILE);
+    if (fs.existsSync(frontmatterPath)) {
+      const overlayFields = parseSimpleYamlObject(fs.readFileSync(frontmatterPath, "utf8"), frontmatterPath);
+      const current = replacementSkillContents ?? fs.readFileSync(skillFile, "utf8");
+      const next = mergeFrontmatter(current, overlayFields, skillFile);
+      merge = { next, changed: next !== current };
+    }
+
+    const effectiveSkill = merge?.next ?? replacementSkillContents;
+    if (effectiveSkill !== null) {
+      const { frontmatterText } = splitSkillDocument(effectiveSkill, skillFile);
+      const { fields } = parseFrontmatterFields(frontmatterText);
+      const name = (fields.name ?? "").trim().replace(/^['"]|['"]$/g, "");
+      const description = (fields.description ?? "").trim().replace(/^['"]|['"]$/g, "");
+      if (!name || name !== skillName) fail(`${skillFile} name must match overlay directory (${skillName})`);
+      if (!description) fail(`${skillFile} needs a description`);
+    }
+
+    plans.push({ skillName, files, skillFile, merge });
+  }
+  return plans;
+}
+
+/**
+ * Apply every overlay under overlays/ onto Skills/.
+ * @returns {{ skills: string[], frontmatterMerges: number, filesCopied: number }}
+ */
+export function applyOverlays(packageRoot, options = {}) {
+  const overlaysRoot = options.overlaysRoot ?? path.join(packageRoot, "overlays");
+  const skillsRoot = options.skillsRoot ?? path.join(packageRoot, "Skills");
+  const dryRun = Boolean(options.dryRun);
+  const plans = planOverlays(overlaysRoot, skillsRoot);
+
+  let frontmatterMerges = 0;
+  let filesCopied = 0;
+  const applied = [];
+  for (const plan of plans) {
+    for (const file of plan.files) {
       if (!dryRun) {
-        fs.mkdirSync(path.dirname(destination), { recursive: true });
-        fs.copyFileSync(source, destination);
+        fs.mkdirSync(path.dirname(file.destination), { recursive: true });
+        fs.copyFileSync(file.source, file.destination);
       }
       filesCopied += 1;
     }
-
-    if (hasFrontmatter) {
-      const overlayFields = parseSimpleYamlObject(
-        fs.readFileSync(frontmatterPath, "utf8"),
-        frontmatterPath,
-      );
-      const skillFile = path.join(skillDir, "SKILL.md");
-      const current = fs.readFileSync(skillFile, "utf8");
-      const next = mergeFrontmatter(current, overlayFields, skillFile);
-      if (next !== current) {
-        if (!dryRun) fs.writeFileSync(skillFile, next, "utf8");
-        frontmatterMerges += 1;
-      }
+    if (plan.merge?.changed) {
+      if (!dryRun) fs.writeFileSync(plan.skillFile, plan.merge.next, "utf8");
+      frontmatterMerges += 1;
     }
-
-    applied.push(skillName);
-    if (options.onSkill) options.onSkill(skillName);
+    applied.push(plan.skillName);
+    if (options.onSkill) options.onSkill(plan.skillName);
   }
 
   return { skills: applied, frontmatterMerges, filesCopied };

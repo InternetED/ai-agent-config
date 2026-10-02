@@ -52,6 +52,19 @@ function parseFrontmatterName(contents) {
   return null;
 }
 
+function hasYamlFrontmatter(contents) {
+  return /^---\s*\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/.test(contents);
+}
+
+function parseOverlayFrontmatterName(contents) {
+  let name;
+  for (const rawLine of contents.split(/\r?\n/)) {
+    const field = rawLine.trim().match(/^name:\s*(.*)$/);
+    if (field) name = field[1].trim().replace(/^['"]|['"]$/g, "");
+  }
+  return name;
+}
+
 function hasUseWhen(contents) {
   // Trigger may live in description frontmatter and/or body.
   return /use\s+when/i.test(contents);
@@ -76,10 +89,21 @@ function collectProblems(packageRoot) {
 
     const overlaySkill = path.join(overlaysRoot, name, "SKILL.md");
     if (fs.existsSync(overlaySkill)) {
-      const overlayName = parseFrontmatterName(fs.readFileSync(overlaySkill, "utf8"));
-      if (overlayName !== null && overlayName !== name) {
+      const contents = fs.readFileSync(overlaySkill, "utf8");
+      if (!hasYamlFrontmatter(contents)) {
+        problems.push(`overlay skill missing frontmatter: overlays/${name}/SKILL.md`);
+        continue;
+      }
+      const overlayName = parseFrontmatterName(contents);
+      const frontmatterPath = path.join(overlaysRoot, name, "frontmatter.yaml");
+      const effectiveName = fs.existsSync(frontmatterPath)
+        ? parseOverlayFrontmatterName(fs.readFileSync(frontmatterPath, "utf8")) ?? overlayName
+        : overlayName;
+      if (!effectiveName) {
+        problems.push(`overlay skill missing name: overlays/${name}/SKILL.md`);
+      } else if (effectiveName !== name) {
         problems.push(
-          `overlay skill mismatch: overlays/${name}/SKILL.md name="${overlayName}" (expected "${name}")`,
+          `overlay skill mismatch: overlays/${name}/SKILL.md name="${effectiveName}" (expected "${name}")`,
         );
       }
     }

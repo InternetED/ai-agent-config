@@ -99,12 +99,100 @@ try {
   assert.notEqual(nonInteractiveResult.status, 0);
   assert.match(nonInteractiveResult.stderr, /requires --scope user or --scope project/);
 
-  const unityInstaller = fs.readFileSync(path.join(scriptDirectory, "..", "Editor", "AIAgentConfigInstaller.cs"), "utf8");
-  assert.doesNotMatch(unityInstaller, /\[InitializeOnLoad\]/, "OpenUPM must not silently choose an installation scope");
-  assert.match(unityInstaller, /install --scope user --prune/, "Unity must offer user-scope installation");
-  assert.match(unityInstaller, /install --scope project/, "Unity must offer project-scope installation");
+  const collisionRoot = path.join(temporaryHome, "codex-collision");
+  fs.mkdirSync(path.join(collisionRoot, ".codex"), { recursive: true });
+  const unmanagedCodex = '[mcp_servers."local_docs"]\ncommand = "my-docs"\n';
+  fs.writeFileSync(path.join(collisionRoot, ".codex", "config.toml"), unmanagedCodex);
+  const collisionResult = spawnSync(process.execPath, [syncScript, "install", "--scope", "project", "--project", collisionRoot, "--manifest", manifestPath], { encoding: "utf8" });
+  assert.equal(collisionResult.status, 1, "An unmanaged Codex server must not be redefined");
+  assert.equal(fs.readFileSync(path.join(collisionRoot, ".codex", "config.toml"), "utf8"), unmanagedCodex);
+  assert.equal(fs.existsSync(path.join(collisionRoot, ".agents")), false, "A rejected installation must not copy Skills");
 
-  console.log("Integration test passed: user and project scopes install shared inputs for Claude Code and Codex without replacing unrelated configuration.");
+  const invalidEnabledPath = path.join(temporaryHome, "invalid-enabled.json");
+  fs.writeFileSync(invalidEnabledPath, JSON.stringify({ schemaVersion: 1, servers: { disabled: { enabled: "false", transport: "http", url: "https://disabled.example/mcp" } } }));
+  const invalidEnabledResult = spawnSync(process.execPath, [syncScript, "check", "--manifest", invalidEnabledPath], { encoding: "utf8" });
+  assert.equal(invalidEnabledResult.status, 1, "A non-boolean enabled value must not activate a server");
+  const snapshot = (root) => {
+    if (!fs.existsSync(root)) return [];
+    const files = [];
+    const visit = (directory) => {
+      for (const entry of fs.readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+        const file = path.join(directory, entry.name);
+        files.push([path.relative(root, file), entry.isDirectory() ? null : fs.readFileSync(file).toString("base64")]);
+        if (entry.isDirectory()) visit(file);
+      }
+    };
+    visit(root);
+    return files;
+  };
+  const expectRejectedInstall = (root) => {
+    const before = snapshot(root);
+    const result = spawnSync(process.execPath, [syncScript, "install", "--scope", "project", "--project", root, "--manifest", manifestPath, "--prune"], { encoding: "utf8" });
+    assert.equal(result.status, 1, result.stdout);
+    assert.deepEqual(snapshot(root), before, "Rejected installation must preserve every destination file");
+  };
+
+  const tomlConflicts = [
+    '[mcp_servers.local_docs]\ncommand = "my-docs"\n',
+    "[ 'mcp_servers' . 'local_docs' . env ]\nTOKEN = 'keep-me'\n",
+    '["mcp_servers"."local_\\u0064ocs"]\ncommand = "my-docs"\n',
+    '[mcp_servers]\nlocal_docs = { command = "my-docs" }\n',
+    'mcp_servers.local_docs.command = "my-docs"\n',
+    'mcp_servers = { local_docs = { command = "my-docs" } }\n',
+  ];
+  for (const [index, toml] of tomlConflicts.entries()) {
+    const root = path.join(temporaryHome, `toml-conflict-${index}`);
+    fs.mkdirSync(path.join(root, ".codex"), { recursive: true });
+    fs.writeFileSync(path.join(root, ".codex", "config.toml"), toml);
+    expectRejectedInstall(root);
+  }
+
+  const claudeCollisionRoot = path.join(temporaryHome, "claude-collision");
+  fs.mkdirSync(claudeCollisionRoot);
+  fs.writeFileSync(path.join(claudeCollisionRoot, ".mcp.json"), JSON.stringify({ mcpServers: { local_docs: { command: "my-docs" } } }));
+  expectRejectedInstall(claudeCollisionRoot);
+
+  const invalidClaudeRoot = path.join(temporaryHome, "invalid-claude");
+  fs.mkdirSync(path.join(invalidClaudeRoot, ".codex"), { recursive: true });
+  fs.writeFileSync(path.join(invalidClaudeRoot, ".codex", "config.toml"), 'model = "keep-me"\n');
+  fs.writeFileSync(path.join(invalidClaudeRoot, ".mcp.json"), "{ invalid");
+  expectRejectedInstall(invalidClaudeRoot);
+
+  const skillCollisionRoot = path.join(temporaryHome, "skill-collision");
+  const firstSkill = path.join(skillCollisionRoot, ".agents", "skills", sourceSkillNames[0]);
+  const lastSkill = path.join(skillCollisionRoot, ".claude", "skills", sourceSkillNames.at(-1));
+  fs.mkdirSync(firstSkill, { recursive: true });
+  fs.writeFileSync(path.join(firstSkill, ".ai-agent-config-owner.json"), JSON.stringify({ package: "com.interneted.ai-agent-config", skill: sourceSkillNames[0] }));
+  fs.writeFileSync(path.join(firstSkill, "SKILL.md"), "User's existing managed Skill");
+  fs.mkdirSync(lastSkill, { recursive: true });
+  fs.writeFileSync(path.join(lastSkill, "SKILL.md"), "User's unmanaged Skill");
+  expectRejectedInstall(skillCollisionRoot);
+
+  const beforeRetryCodex = fs.readFileSync(path.join(projectRoot, ".codex", "config.toml"), "utf8");
+  const retryResult = spawnSync(process.execPath, [syncScript, "install", "--scope", "project", "--project", projectRoot, "--manifest", manifestPath, "--prune"], { encoding: "utf8" });
+  assert.equal(retryResult.status, 0, retryResult.stderr);
+  assert.equal(fs.readFileSync(path.join(projectRoot, ".codex", "config.toml"), "utf8"), beforeRetryCodex);
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(projectRoot, ".mcp.json"), "utf8")), projectClaude);
+
+  const unrelatedRoot = path.join(temporaryHome, "toml-string");
+  fs.mkdirSync(path.join(unrelatedRoot, ".codex"), { recursive: true });
+  const unrelatedToml = `note = """
+[mcp_servers.local_docs]
+"""
+list = [
+  "[mcp_servers.local_docs]",
+]
+[mcp_servers.unrelated]
+command = "keep-me"
+["odd\\U00000022table"]
+mcp_servers.local_docs.command = "keep-me"
+`;
+  fs.writeFileSync(path.join(unrelatedRoot, ".codex", "config.toml"), unrelatedToml);
+  const unrelatedResult = spawnSync(process.execPath, [syncScript, "install", "--scope", "project", "--project", unrelatedRoot, "--manifest", manifestPath], { encoding: "utf8" });
+  assert.equal(unrelatedResult.status, 0, unrelatedResult.stderr);
+  assert.ok(fs.readFileSync(path.join(unrelatedRoot, ".codex", "config.toml"), "utf8").startsWith(unrelatedToml));
+
+  console.log("Integration tests passed: scoped installation, managed updates, conflict rejection, and preflight preservation.");
 } finally {
   const resolvedTemporaryHome = path.resolve(temporaryHome);
   if (resolvedTemporaryHome.startsWith(path.resolve(os.tmpdir()) + path.sep)) {

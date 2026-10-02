@@ -81,6 +81,7 @@ function validateManifest(manifest) {
     if (!/^[A-Za-z0-9_-]+$/.test(name)) fail(`Invalid MCP server name: ${name}`);
     if (!server || typeof server !== "object" || Array.isArray(server)) fail(`MCP server ${name} must be an object`);
     if (!new Set(["stdio", "http"]).has(server.transport)) fail(`MCP server ${name} has unsupported transport`);
+    if (server.enabled !== undefined && typeof server.enabled !== "boolean") fail(`MCP server ${name}.enabled must be a boolean`);
 
     if (server.transport === "stdio") {
       if (typeof server.command !== "string" || server.command.length === 0) fail(`MCP server ${name} needs command`);
@@ -205,6 +206,69 @@ function removeManagedCodexBlock(contents) {
   return `${contents.slice(0, start)}${contents.slice(end + END_MARKER.length)}`.trimEnd();
 }
 
+// Inspect TOML declarations, not values: quoted keys and multiline strings must
+// not hide a collision or make an unrelated string look like an MCP table.
+function assertNoCodexCollisions(contents, serverNames) {
+  if (serverNames.length === 0) return;
+  const names = new Set(serverNames);
+  const tokens = contents.match(/"""(?:\\[\s\S]|(?!""")[\s\S])*"""|'''[\s\S]*?'''|"(?:\\[^\r\n]|[^"\\\r\n])*"|'[^'\r\n]*'|#[^\r\n]*|\r?\n|[A-Za-z0-9_-]+|[^\s]/g) ?? [];
+  let index = 0;
+  let table = [];
+  const key = () => {
+    const parts = [];
+    while (index < tokens.length) {
+      const token = tokens[index];
+      if (token.startsWith('"""') || token.startsWith("'''")) break;
+      if (token.startsWith('"')) {
+        const escapes = { b: "\b", t: "\t", n: "\n", f: "\f", r: "\r", '"': '"', "\\": "\\" };
+        parts.push(token.slice(1, -1).replace(/\\(?:u([0-9A-Fa-f]{4})|U([0-9A-Fa-f]{8})|([btnfr"\\]))/g, (_, short, long, escaped) =>
+          escaped === undefined ? String.fromCodePoint(Number.parseInt(short ?? long, 16)) : escapes[escaped],
+        ));
+      } else if (token.startsWith("'")) parts.push(token.slice(1, -1));
+      else if (/^[A-Za-z0-9_-]+$/.test(token)) parts.push(token);
+      else break;
+      index += 1;
+      if (tokens[index] !== ".") break;
+      index += 1;
+    }
+    return parts;
+  };
+  const check = (parts) => {
+    if (parts[0] === "mcp_servers" && names.has(parts[1])) {
+      fail(`MCP server ${parts[1]} already exists outside the managed Codex block`);
+    }
+  };
+  while (index < tokens.length) {
+    if (tokens[index].startsWith("#") || tokens[index].includes("\n")) { index += 1; continue; }
+    if (tokens[index] === "[") {
+      index += 1;
+      const arrayTable = tokens[index] === "[";
+      if (arrayTable) index += 1;
+      table = key();
+      check(table);
+      if (arrayTable && table.length === 1 && table[0] === "mcp_servers") fail("Cannot extend an MCP array table; use standard MCP tables");
+      while (index < tokens.length && tokens[index] !== "\n" && tokens[index] !== "\r\n") index += 1;
+      continue;
+    }
+    const parts = [...table, ...key()];
+    if (tokens[index] === "=") {
+      check(parts);
+      if (parts.length === 1 && parts[0] === "mcp_servers") {
+        fail("Cannot extend an inline MCP namespace; use standard [mcp_servers.NAME] tables");
+      }
+    }
+    // Arrays/inline tables may span lines. Strings are single tokens.
+    let depth = 0;
+    do {
+      const token = tokens[index++];
+      if (token === "[" || token === "{") depth += 1;
+      else if (token === "]" || token === "}") depth -= 1;
+      else if ((token === "\n" || token === "\r\n") && depth === 0) break;
+    } while (index < tokens.length);
+  }
+}
+
+
 function writeFile(filePath, contents, options) {
   if (options.dryRun) {
     console.log(`[dry-run] write ${filePath}`);
@@ -227,13 +291,18 @@ function assertDirectChild(root, target) {
   }
 }
 
-function installSkill(skill, destinationRoot, options) {
+function validateSkillDestination(skill, destinationRoot, options) {
   const destination = path.join(destinationRoot, skill.name);
   assertDirectChild(destinationRoot, destination);
   const ownerFile = path.join(destination, ".ai-agent-config-owner.json");
   if (fs.existsSync(destination) && !fs.existsSync(ownerFile) && !options.force) {
     fail(`Skill destination already exists and is not managed: ${destination}. Use --force to replace it.`);
   }
+}
+
+function installSkill(skill, destinationRoot, options) {
+  const destination = path.join(destinationRoot, skill.name);
+  const ownerFile = path.join(destination, ".ai-agent-config-owner.json");
   if (options.dryRun) {
     console.log(`[dry-run] install skill ${skill.name} -> ${destination}`);
     return;
@@ -270,26 +339,18 @@ function install(servers, skills, options) {
   const previousState = fs.existsSync(statePath) ? readJson(statePath) : { skillNames: [], mcpNames: [] };
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
   const backupRoot = path.join(stateRoot, "backups", timestamp);
-
   const codexSkills = path.join(targetRoot, ".agents", "skills");
   const claudeSkills = path.join(targetRoot, ".claude", "skills");
-  for (const skill of skills) {
-    installSkill(skill, codexSkills, options);
-    installSkill(skill, claudeSkills, options);
-  }
-  pruneSkills(previousState.skillNames ?? [], skills.map((skill) => skill.name), codexSkills, options);
-  pruneSkills(previousState.skillNames ?? [], skills.map((skill) => skill.name), claudeSkills, options);
+  const skillNames = skills.map((skill) => skill.name);
+  const serverNames = Object.keys(servers);
 
   const codexPath = path.join(targetRoot, ".codex", "config.toml");
   const existingCodex = fs.existsSync(codexPath) ? fs.readFileSync(codexPath, "utf8") : "";
   let nextCodex = removeManagedCodexBlock(existingCodex);
+  assertNoCodexCollisions(nextCodex, serverNames);
   const renderedCodex = renderCodex(servers);
   if (renderedCodex) nextCodex = `${nextCodex}${nextCodex ? "\n\n" : ""}${START_MARKER}\n${renderedCodex}\n${END_MARKER}`;
   nextCodex = `${nextCodex.trimEnd()}\n`;
-  if (nextCodex !== existingCodex) {
-    backupFile(codexPath, backupRoot, options);
-    writeFile(codexPath, nextCodex, options);
-  }
 
   const claudePath = options.scope === "project"
     ? path.join(targetRoot, ".mcp.json")
@@ -302,32 +363,57 @@ function install(servers, skills, options) {
     fail(`Cannot update ${claudePath}: ${error.message}`);
   }
   if (!existingClaude || typeof existingClaude !== "object" || Array.isArray(existingClaude)) fail(`${claudePath} must contain a JSON object`);
-  if (!existingClaude.mcpServers || typeof existingClaude.mcpServers !== "object" || Array.isArray(existingClaude.mcpServers)) {
-    existingClaude.mcpServers = {};
+  if (existingClaude.mcpServers !== undefined && (!existingClaude.mcpServers || typeof existingClaude.mcpServers !== "object" || Array.isArray(existingClaude.mcpServers))) {
+    fail(`${claudePath}.mcpServers must contain a JSON object`);
+  }
+  existingClaude.mcpServers ??= {};
+  for (const name of serverNames) {
+    if (Object.hasOwn(existingClaude.mcpServers, name) && !(previousState.mcpNames ?? []).includes(name)) {
+      fail(`MCP server ${name} already exists and is not managed in ${claudePath}`);
+    }
   }
   if (options.prune) {
     for (const previousName of previousState.mcpNames ?? []) {
-      if (!(previousName in servers)) delete existingClaude.mcpServers[previousName];
+      if (!Object.hasOwn(servers, previousName)) delete existingClaude.mcpServers[previousName];
     }
   }
   Object.assign(existingClaude.mcpServers, renderClaudeObject(servers).mcpServers);
   const nextClaudeText = `${JSON.stringify(existingClaude, null, 2)}\n`;
-  if (nextClaudeText !== existingClaudeText) {
-    backupFile(claudePath, backupRoot, options);
-    writeFile(claudePath, nextClaudeText, options);
-  }
-
   const state = {
     package: PACKAGE_ID,
     version: readJson(path.join(packageRoot, "package.json")).version,
     scope: options.scope,
     targetRoot,
     installedAt: new Date().toISOString(),
-    skillNames: skills.map((skill) => skill.name),
-    mcpNames: Object.keys(servers).sort(),
+    skillNames,
+    mcpNames: serverNames.sort(),
   };
+
+  // Validate every destination before copying, pruning, backing up, or writing.
+  for (const destinationRoot of [codexSkills, claudeSkills]) {
+    for (const skill of skills) validateSkillDestination(skill, destinationRoot, options);
+    if (options.prune) {
+      for (const name of (previousState.skillNames ?? []).filter((name) => !skillNames.includes(name))) {
+        assertDirectChild(destinationRoot, path.join(destinationRoot, name));
+      }
+    }
+  }
+  for (const skill of skills) {
+    installSkill(skill, codexSkills, options);
+    installSkill(skill, claudeSkills, options);
+  }
+  pruneSkills(previousState.skillNames ?? [], skillNames, codexSkills, options);
+  pruneSkills(previousState.skillNames ?? [], skillNames, claudeSkills, options);
+  if (nextCodex !== existingCodex) {
+    backupFile(codexPath, backupRoot, options);
+    writeFile(codexPath, nextCodex, options);
+  }
+  if (nextClaudeText !== existingClaudeText) {
+    backupFile(claudePath, backupRoot, options);
+    writeFile(claudePath, nextClaudeText, options);
+  }
   writeFile(statePath, `${JSON.stringify(state, null, 2)}\n`, options);
-  console.log(`Installed ${skills.length} skill(s) and ${Object.keys(servers).length} MCP server(s) at ${options.scope} scope: ${targetRoot}`);
+  console.log(`Installed ${skills.length} skill(s) and ${serverNames.length} MCP server(s) at ${options.scope} scope: ${targetRoot}`);
 }
 
 function showHelp() {

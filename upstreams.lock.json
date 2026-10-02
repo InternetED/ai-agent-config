@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-30",
+  "updatedAt": "2026-10-02",
   "sources": {
     "mattpocock-skills": {
       "repository": "https://github.com/mattpocock/skills.git",
@@ -51,7 +51,7 @@
     },
     "compound-engineering-plugin": {
       "repository": "https://github.com/everyinc/compound-engineering-plugin.git",
-      "commit": "89408fddf8dff7703e512b14d0cfcdc9b97a5019",
+      "commit": "9af474a70e7f2a844338519ad9e92aafbd92d4fb",
       "paths": [
         "skills/ce-commit"
       ],

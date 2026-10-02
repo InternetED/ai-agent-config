@@ -32,8 +32,10 @@ another project. Restart an agent session that was already open if it does not
 detect new Skills immediately.
 
 The installer copies managed Skills and merges managed MCP entries without
-replacing unrelated settings. It creates backups before changing MCP
-configuration and stores environment-variable names, never credentials.
+replacing unrelated settings. It rejects unmanaged MCP name collisions and
+validates configuration and Skill destinations before writing. It creates
+backups before changing MCP configuration and stores environment-variable names,
+never credentials.
 
 ## Source of truth
 
@@ -41,9 +43,50 @@ configuration and stores environment-variable names, never credentials.
 - `Config/mcp.servers.json` contains vendor-neutral MCP definitions.
 - `Scripts/sync.mjs` validates, generates, and installs both client formats.
 
-The package includes 42 Skills: engineering workflows migrated from the former
-`ed-engineering` plugin, plus the package-management Skill. It does not use a
-Codex plugin manifest or plugin installation lifecycle.
+The package includes 46 Skills: engineering workflows migrated from the former
+`ed-engineering` plugin, package management, Vercel discovery/browser automation,
+and selected Anthropic visual-design and MCP-development workflows.
+It does not use a Codex plugin manifest or plugin installation lifecycle.
+
+`find-skills` searches for additional skills; use `ask-matt` to select workflows
+already bundled here. Its source pin and MIT license are recorded in
+`THIRD_PARTY_NOTICES.md`; local routing metadata lives in
+`overlays/find-skills/frontmatter.yaml`. The standalone Vercel and Anthropic
+imports are not refreshed by `npm run upstreams`; their source pins and licenses
+are recorded in `THIRD_PARTY_NOTICES.md`. Project installs made with `npx skills add` live
+in ignored `.agents/skills/` and `.claude/skills/` directories; `skills-lock.json`
+records the CLI installation for restoration with `npx skills experimental_install`.
+
+`agent-browser` points to version-matched workflows served by the separate
+agent-browser CLI (`agent-browser skills get core`). Adding this Skill does not
+install that CLI or its browser runtime; see the upstream installation instructions
+at https://github.com/vercel-labs/agent-browser before using browser commands.
+
+### Selected Anthropic skills
+
+| Skill | Gap filled | Existing workflow boundary |
+| --- | --- | --- |
+| `frontend-design` | Visual direction, typography, layout, and UI critique | `prototype` explores UI/state; `agent-browser` automates browser interaction. |
+| `mcp-builder` | Implement MCP servers with TypeScript/Python SDKs and evaluations | `manage-ai-agent-config` manages definitions and installation, not server implementation. |
+
+The complete MCP scripts/references and per-skill Apache-2.0 licenses are bundled.
+Durable frontend routing adaptations live under `overlays/frontend-design/`.
+Public upstream CLI installs/restores do not apply that local overlay; use this
+package’s installer for its adapted Skills. MCP model-backed evaluations require
+the dependencies in `Skills/mcp-builder/scripts/requirements.txt` and Anthropic
+API access. Adding the Skills does not install those dependencies.
+
+`skill-creator` was evaluated but is not included: its review generator embeds
+unescaped JSON in a script element. A harmless browser smoke confirmed that
+`</script><script>…` in eval metadata executes JavaScript in the review page
+at the pinned upstream revision. Existing authoring guidance remains in
+`writing-for-agents`; adopting this evaluator requires a separately reviewed fix.
+
+Selection excludes `webapp-testing` (overlaps the browser workflow),
+`doc-coauthoring` (overlaps existing specification/writing workflows),
+Claude-specific onboarding/API guidance, brand/communications/art presets, and
+document-format Skills (`docx`, `pdf`, `pptx`, `xlsx`) with proprietary licenses.
+The document-format Skills are not bundled or redistributed.
 
 ### Recent skill updates (on main)
 
@@ -82,7 +125,7 @@ Run the installation command again to use the current `main` branch. Pin a
 release when reproducibility matters:
 
 ```sh
-npx --yes github:InternetED/ai-agent-config#v0.6.0
+npx --yes github:InternetED/ai-agent-config#v0.7.0
 ```
 
 Imported upstream versions are pinned in `upstreams.lock.json`. Maintainers can
@@ -93,10 +136,13 @@ npm run upstreams
 npm run upstreams -- --apply
 ```
 
-`ed-brainstorm` is a local Skill and is never overwritten by the upstream
-updater. Durable edits to upstream-synced skills live under `overlays/` and are
-re-applied automatically after `--apply`. Ownership split (upstream / local durable /
-overlay) and correction-driven growth are in Maintaining.
+Local Skills `ed-brainstorm`, `manage-ai-agent-config`, `security-review`, and
+`verification-before-completion` are protected from upstream overwrites. Durable
+edits to upstream-synced skills live under `overlays/` and are re-applied after
+`--apply`. Updates validate the staged result before replacing repository inputs.
+To also install, pass `--apply --install --scope user` or
+`--apply --install --scope project [--project PATH]`; scope is never implicit.
+Ownership and correction-driven growth are in Maintaining.
 
 ## Optional Unity installation
 
