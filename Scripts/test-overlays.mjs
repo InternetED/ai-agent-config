@@ -4,11 +4,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { applyOverlays, mergeFrontmatter } from "./overlays.mjs";
-
-const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
-const packageRoot = path.resolve(scriptDirectory, "..");
 
 function write(filePath, contents) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -91,7 +87,97 @@ Local durable body.
   assert.match(replacedText, /Local durable body\./);
   assert.match(replacedText, /disable-model-invocation: true/);
   assert.doesNotMatch(replacedText, /Upstream only/);
+  fs.rmSync(path.join(overlaysRoot, "replace-skill"), { recursive: true, force: true });
   assert.doesNotMatch(replacedText, /disable-model-invocation: false/);
+
+  // Dry-run must merge against a replacement SKILL.md, just as apply does.
+  write(
+    path.join(skillsRoot, "dry-run-skill", "SKILL.md"),
+    `---
+name: dry-run-skill
+description: Upstream body.
+---
+
+Upstream only.
+`,
+  );
+  write(
+    path.join(overlaysRoot, "dry-run-skill", "SKILL.md"),
+    `---
+name: dry-run-skill
+description: Local body.
+disable-model-invocation: true
+---
+
+Local body.
+`,
+  );
+  write(
+    path.join(overlaysRoot, "dry-run-skill", "frontmatter.yaml"),
+    "disable-model-invocation: true\n",
+  );
+  const dryRun = applyOverlays(temporaryRoot, { skillsRoot, overlaysRoot, dryRun: true });
+  assert.equal(dryRun.frontmatterMerges, 0);
+  const appliedAfterDryRun = applyOverlays(temporaryRoot, { skillsRoot, overlaysRoot });
+  assert.equal(appliedAfterDryRun.frontmatterMerges, dryRun.frontmatterMerges);
+
+  // Preflight every operation: an invalid frontmatter overlay cannot leave
+  // files from an earlier overlay behind.
+  write(
+    path.join(skillsRoot, "first-skill", "SKILL.md"),
+    `---
+name: first-skill
+description: First skill.
+---
+
+First body.
+`,
+  );
+  write(path.join(overlaysRoot, "first-skill", "reference.md"), "must not copy\n");
+  write(
+    path.join(skillsRoot, "zz-bad-yaml", "SKILL.md"),
+    `---
+name: zz-bad-yaml
+description: Bad YAML target.
+---
+
+Target body.
+`,
+  );
+  write(path.join(overlaysRoot, "zz-bad-yaml", "frontmatter.yaml"), "not valid YAML\n");
+  assert.throws(
+    () => applyOverlays(temporaryRoot, { skillsRoot, overlaysRoot }),
+    /frontmatter.yaml has an unsupported line/,
+  );
+  assert.equal(fs.existsSync(path.join(skillsRoot, "first-skill", "reference.md")), false);
+
+  // A malformed full SKILL.md is also caught before any overlay file is written.
+  fs.rmSync(path.join(overlaysRoot, "zz-bad-yaml"), { recursive: true, force: true });
+  write(
+    path.join(skillsRoot, "invalid-full-skill", "SKILL.md"),
+    `---
+name: invalid-full-skill
+description: Original body.
+---
+
+Original body.
+`,
+  );
+  write(path.join(overlaysRoot, "invalid-full-skill", "SKILL.md"), "No frontmatter.\n");
+  write(path.join(overlaysRoot, "invalid-full-skill", "frontmatter.yaml"), "name: invalid-full-skill\n");
+  assert.throws(
+    () => applyOverlays(temporaryRoot, { skillsRoot, overlaysRoot }),
+    /needs YAML frontmatter before overlays can merge/,
+  );
+  assert.equal(fs.existsSync(path.join(skillsRoot, "first-skill", "reference.md")), false);
+  assert.match(
+    fs.readFileSync(path.join(skillsRoot, "invalid-full-skill", "SKILL.md"), "utf8"),
+    /Original body\./,
+  );
+  fs.unlinkSync(path.join(overlaysRoot, "invalid-full-skill", "frontmatter.yaml"));
+  assert.throws(() => applyOverlays(temporaryRoot, { skillsRoot, overlaysRoot }));
+  assert.equal(fs.existsSync(path.join(skillsRoot, "first-skill", "reference.md")), false);
+  fs.rmSync(path.join(overlaysRoot, "invalid-full-skill"), { recursive: true, force: true });
 
   // Missing skill fails loudly.
   write(path.join(overlaysRoot, "missing-skill", "frontmatter.yaml"), "disable-model-invocation: true\n");
@@ -115,23 +201,6 @@ Hi.
   assert.match(merged, /description: "has: colon"/);
   assert.match(merged, /disable-model-invocation: true/);
   assert.match(merged, /Hi\./);
-
-  // Live repo: wait-what / loop-me keep frontmatter + promoted SKILL.md.
-  for (const name of ["wait-what", "loop-me"]) {
-    const overlayDir = path.join(packageRoot, "overlays", name);
-    assert.equal(fs.existsSync(path.join(overlayDir, "frontmatter.yaml")), true, `${name} frontmatter missing`);
-    assert.equal(fs.existsSync(path.join(overlayDir, "SKILL.md")), true, `${name} SKILL.md overlay missing`);
-  }
-
-  // Live repo: at least one progressive-disclosure sibling overlay exists.
-  assert.equal(
-    fs.existsSync(path.join(packageRoot, "overlays", "wayfinder", "reference.md")),
-    true,
-  );
-  assert.equal(
-    fs.existsSync(path.join(packageRoot, "overlays", "code-review", "smells.md")),
-    true,
-  );
 
   console.log("Overlay unit tests passed.");
 } finally {

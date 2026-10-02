@@ -32,8 +32,10 @@ another project. Restart an agent session that was already open if it does not
 detect new Skills immediately.
 
 The installer copies managed Skills and merges managed MCP entries without
-replacing unrelated settings. It creates backups before changing MCP
-configuration and stores environment-variable names, never credentials.
+replacing unrelated settings. It rejects unmanaged MCP name collisions and
+validates configuration and Skill destinations before writing. It creates
+backups before changing MCP configuration and stores environment-variable names,
+never credentials.
 
 ## Source of truth
 
@@ -93,10 +95,13 @@ npm run upstreams
 npm run upstreams -- --apply
 ```
 
-`ed-brainstorm` is a local Skill and is never overwritten by the upstream
-updater. Durable edits to upstream-synced skills live under `overlays/` and are
-re-applied automatically after `--apply`. Ownership split (upstream / local durable /
-overlay) and correction-driven growth are in Maintaining.
+Local Skills `ed-brainstorm`, `manage-ai-agent-config`, `security-review`, and
+`verification-before-completion` are protected from upstream overwrites. Durable
+edits to upstream-synced skills live under `overlays/` and are re-applied after
+`--apply`. Updates validate the staged result before replacing repository inputs.
+To also install, pass `--apply --install --scope user` or
+`--apply --install --scope project [--project PATH]`; scope is never implicit.
+Ownership and correction-driven growth are in Maintaining.
 
 ## Optional Unity installation
 

@@ -46,12 +46,27 @@ repository changes during preview.
 
 Run `npm run upstreams -- --apply` to apply the preview, refresh third-party
 license copies and commit pins, **re-apply local overlays**, and validate the
-result. Add `--install` to also synchronize the result to both clients. You may
-test a specific branch or tag with `--matt-ref <ref>` or `--compound-ref <ref>`.
+result. To also synchronize both clients, explicitly choose a scope:
+
+```sh
+npm run upstreams -- --apply --install --scope user
+npm run upstreams -- --apply --install --scope project --project /path/to/project
+```
+
+`--home PATH` overrides the user profile for isolated testing. Missing or invalid
+install scope is rejected before fetching or updating. You may test a specific
+branch or tag with `--matt-ref <ref>` or `--compound-ref <ref>`.
+
+Both apply and overlays-only build a staged Skills tree and validate its overlays
+and Skill metadata before replacing repository inputs. Combined apply/install
+also dry-runs the chosen client destinations before promotion. Validation errors
+leave live Skills, licenses, lock pins, and client files unchanged. Promotion
+rolls back synchronous rename failures; this is not a crash-safe transaction
+across repository and client files.
 
 The updater owns the Skill names recorded under each source in
-`upstreams.lock.json`. It must never overwrite the local `ed-brainstorm`
-Skill. Review the resulting Git diff before release.
+`upstreams.lock.json` and rejects upstream collisions with all four durable local
+Skills listed above. Review the resulting Git diff before release.
 
 ### Frontmatter portability policy
 
@@ -93,11 +108,15 @@ Rules:
 - Overlay directory names must match an existing `Skills/<skill-name>/`.
 - `frontmatter.yaml` is never copied into the skill tree; it only merges keys.
 - Any other file is copied over the matching path under `Skills/<skill-name>/`.
-- Apply **fails loudly** if the skill is missing, `SKILL.md` is missing when a
-  frontmatter overlay exists, a path would escape the skill directory, or
-  `frontmatter.yaml` has an unsupported line.
-- Prefer overlays over forking an upstream skill into `protectedLocalNames`
-  unless the skill is intentionally local-only (today: `ed-brainstorm`).
+- Apply **fails loudly** if the skill or target `SKILL.md` is missing, a path would
+  escape the skill directory, `frontmatter.yaml` has an unsupported line, or the
+  effective replacement document lacks valid name/description metadata.
+- All overlay plans are validated before files are copied. `--dry-run` merges
+  against the planned replacement `SKILL.md`, not the old target, without writes.
+- Skill health requires full-file `SKILL.md` overlays to have frontmatter and an
+  effective name matching the directory; `frontmatter.yaml` may supply that name.
+- Prefer overlays over adding an upstream skill to `protectedLocalNames` unless
+  the skill is intentionally local-only (see the ownership table above).
 
 ### When to overlay vs fork
 
@@ -206,6 +225,15 @@ Add one entry to `Config/mcp.servers.json`. Use `stdio` for a local process and
 `http` for a streamable HTTP endpoint. Put credential names in `envVars`,
 `bearerTokenEnv`, or `headersFromEnv`; keep credential values out of Git.
 
+`enabled`, when present, must be a JSON boolean; use `false`, not `"false"`.
+Installation rejects names already present outside the managed Codex block or
+absent from Claude managed-name state. `--force` only replaces unmanaged Skill
+directories, not MCP servers. Rename or explicitly remove a conflicting MCP
+entry before retrying. A Codex inline `mcp_servers = { ... }` namespace cannot be
+extended by generated tables; convert it to `[mcp_servers.NAME]` tables first.
+Configuration parsing and destination checks precede all install writes; they do
+not guarantee rollback on later filesystem errors or process interruption.
+
 For example:
 
 ```json
@@ -230,6 +258,9 @@ installation. If a local installation is requested, use
 `node Scripts/sync.mjs install --scope user` or
 `node Scripts/sync.mjs install --scope project`. Completion means `check`,
 `test`, and `npm pack --dry-run` pass.
+
+The upstream regression tests require Git on PATH and use isolated local Git
+repositories and URL rewrites; they do not fetch from the network.
 
 ## Release
 

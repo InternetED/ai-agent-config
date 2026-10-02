@@ -32,7 +32,7 @@
   },
   "scripts": {
     "check": "node Scripts/sync.mjs check",
-    "test": "node Scripts/test.mjs && node Scripts/test-overlays.mjs && node Scripts/test-skill-health.mjs",
+    "test": "node Scripts/test.mjs && node Scripts/test-overlays.mjs && node Scripts/test-skill-health.mjs && node Scripts/test-upstreams.mjs",
     "upstreams": "node Scripts/sync-upstreams.mjs",
     "overlays": "node Scripts/overlays.mjs",
     "skill-health": "node Scripts/skill-health.mjs"

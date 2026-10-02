@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Reject unmanaged MCP name collisions and non-boolean `enabled` values; preflight configuration and all Skill destinations before installation writes.
+- Protect all durable local Skills from upstream imports and require explicit scope for upstream apply/install.
+- Validate staged upstream updates and optional install destinations before promoting Skills, licenses, and lock pins.
+- Fix overlay dry-run replacement/merge parity, validate all overlay plans before writes, and reject full-file overlays without effective name metadata in skill health.
+- Add isolated installation and upstream regression coverage, using local Git fixtures without network access.
+
 - Reconcile mattpocock/skills v1.3: import `pr` with a thin authority overlay, remove `resolving-merge-conflicts`, and pin upstream provenance to `d81f3a1`.
 - Rename domain glossary files from CONTEXT to GLOSSARY across imported skills, durable overlays, and supporting references.
 - Selectively absorb `implement-spec` integration-branch orchestration and `ask-matt` routing for `implement-spec`, `pr`, and `retro` while retaining Draft, verification, local-skill, and human gates.
