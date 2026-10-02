@@ -3,6 +3,12 @@ name: Validate
 on:
   push:
   pull_request:
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   validate:
@@ -15,3 +21,19 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm pack --dry-run
+
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const release = require('./.github/scripts/release.cjs');
+            await release({ github, context, core });

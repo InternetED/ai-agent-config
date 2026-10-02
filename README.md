@@ -128,6 +128,11 @@ release when reproducibility matters:
 npx --yes github:InternetED/ai-agent-config#v0.7.0
 ```
 
+Releases are automated by GitHub Actions: after a `main` merge passes validation,
+a new stable `package.json` version creates a matching Git tag and GitHub Release
+from its changelog section. Already published versions are skipped. This is
+GitHub-backed npx distribution, not npm registry publishing.
+
 Imported upstream versions are pinned in `upstreams.lock.json`. Maintainers can
 preview or apply upstream changes with:
 
