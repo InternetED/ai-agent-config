@@ -17,4 +17,12 @@ This package bundles selected work from the following open-source projects.
 - Derived work: `ed-brainstorm` was inspired by `ce-brainstorm`, then rewritten for this package's Matt Pocock handoff and scope.
 - License: MIT; see `licenses/compound-engineering-LICENSE`
 
+## vercel-labs/skills
+
+- Source: https://github.com/vercel-labs/skills
+- Pinned commit: `3694740352eeef5cdd689af694c485f1ff62eec3`
+- Included: `skills/find-skills/SKILL.md`
+- Local adaptation: routing description via `overlays/find-skills/frontmatter.yaml`
+- License: MIT; see `Licenses/vercel-skills-LICENSE`
+
 Local workflow instructions and OpenUPM packaging are maintained separately in this repository.

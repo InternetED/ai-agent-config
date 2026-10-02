@@ -43,9 +43,18 @@ never credentials.
 - `Config/mcp.servers.json` contains vendor-neutral MCP definitions.
 - `Scripts/sync.mjs` validates, generates, and installs both client formats.
 
-The package includes 42 Skills: engineering workflows migrated from the former
-`ed-engineering` plugin, plus the package-management Skill. It does not use a
-Codex plugin manifest or plugin installation lifecycle.
+The package includes 43 Skills: engineering workflows migrated from the former
+`ed-engineering` plugin, the package-management Skill, and Vercel’s `find-skills`
+discovery workflow. It does not use a Codex plugin manifest or plugin installation
+lifecycle.
+
+`find-skills` searches for additional skills; use `ask-matt` to select workflows
+already bundled here. Its source pin and MIT license are recorded in
+`THIRD_PARTY_NOTICES.md`; local routing metadata lives in
+`overlays/find-skills/frontmatter.yaml`. This standalone Vercel import is not
+refreshed by `npm run upstreams`. Project installs made with `npx skills add` live
+in ignored `.agents/skills/` and `.claude/skills/` directories; `skills-lock.json`
+records the CLI installation for restoration with `npx skills experimental_install`.
 
 ### Recent skill updates (on main)
 

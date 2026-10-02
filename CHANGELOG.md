@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Add Vercel’s `find-skills` discovery workflow, scoped routing metadata, pinned source attribution, and MIT license; preserve project-level Skills CLI installation metadata.
 - Reject unmanaged MCP name collisions and non-boolean `enabled` values; preflight configuration and all Skill destinations before installation writes.
 - Protect all durable local Skills from upstream imports and require explicit scope for upstream apply/install.
 - Validate staged upstream updates and optional install destinations before promoting Skills, licenses, and lock pins.

@@ -7,3 +7,5 @@ Generated/
 Library/
 Temp/
 obj/
+.agents/skills/
+.claude/skills/
