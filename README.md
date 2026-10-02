@@ -43,18 +43,50 @@ never credentials.
 - `Config/mcp.servers.json` contains vendor-neutral MCP definitions.
 - `Scripts/sync.mjs` validates, generates, and installs both client formats.
 
-The package includes 43 Skills: engineering workflows migrated from the former
-`ed-engineering` plugin, the package-management Skill, and Vercel’s `find-skills`
-discovery workflow. It does not use a Codex plugin manifest or plugin installation
-lifecycle.
+The package includes 46 Skills: engineering workflows migrated from the former
+`ed-engineering` plugin, package management, Vercel discovery/browser automation,
+and selected Anthropic visual-design and MCP-development workflows.
+It does not use a Codex plugin manifest or plugin installation lifecycle.
 
 `find-skills` searches for additional skills; use `ask-matt` to select workflows
 already bundled here. Its source pin and MIT license are recorded in
 `THIRD_PARTY_NOTICES.md`; local routing metadata lives in
-`overlays/find-skills/frontmatter.yaml`. This standalone Vercel import is not
-refreshed by `npm run upstreams`. Project installs made with `npx skills add` live
+`overlays/find-skills/frontmatter.yaml`. The standalone Vercel and Anthropic
+imports are not refreshed by `npm run upstreams`; their source pins and licenses
+are recorded in `THIRD_PARTY_NOTICES.md`. Project installs made with `npx skills add` live
 in ignored `.agents/skills/` and `.claude/skills/` directories; `skills-lock.json`
 records the CLI installation for restoration with `npx skills experimental_install`.
+
+`agent-browser` points to version-matched workflows served by the separate
+agent-browser CLI (`agent-browser skills get core`). Adding this Skill does not
+install that CLI or its browser runtime; see the upstream installation instructions
+at https://github.com/vercel-labs/agent-browser before using browser commands.
+
+### Selected Anthropic skills
+
+| Skill | Gap filled | Existing workflow boundary |
+| --- | --- | --- |
+| `frontend-design` | Visual direction, typography, layout, and UI critique | `prototype` explores UI/state; `agent-browser` automates browser interaction. |
+| `mcp-builder` | Implement MCP servers with TypeScript/Python SDKs and evaluations | `manage-ai-agent-config` manages definitions and installation, not server implementation. |
+
+The complete MCP scripts/references and per-skill Apache-2.0 licenses are bundled.
+Durable frontend routing adaptations live under `overlays/frontend-design/`.
+Public upstream CLI installs/restores do not apply that local overlay; use this
+package’s installer for its adapted Skills. MCP model-backed evaluations require
+the dependencies in `Skills/mcp-builder/scripts/requirements.txt` and Anthropic
+API access. Adding the Skills does not install those dependencies.
+
+`skill-creator` was evaluated but is not included: its review generator embeds
+unescaped JSON in a script element. A harmless browser smoke confirmed that
+`</script><script>…` in eval metadata executes JavaScript in the review page
+at the pinned upstream revision. Existing authoring guidance remains in
+`writing-for-agents`; adopting this evaluator requires a separately reviewed fix.
+
+Selection excludes `webapp-testing` (overlaps the browser workflow),
+`doc-coauthoring` (overlaps existing specification/writing workflows),
+Claude-specific onboarding/API guidance, brand/communications/art presets, and
+document-format Skills (`docx`, `pdf`, `pptx`, `xlsx`) with proprietary licenses.
+The document-format Skills are not bundled or redistributed.
 
 ### Recent skill updates (on main)
 

@@ -25,4 +25,20 @@ This package bundles selected work from the following open-source projects.
 - Local adaptation: routing description via `overlays/find-skills/frontmatter.yaml`
 - License: MIT; see `Licenses/vercel-skills-LICENSE`
 
+## vercel-labs/agent-browser
+
+- Source: https://github.com/vercel-labs/agent-browser
+- Pinned commit: `39a74c70d7759d5a6de7a22c04570bb626bbd081`
+- Included: `skills/agent-browser/SKILL.md` (unmodified)
+- License: Apache-2.0; see `Licenses/agent-browser-LICENSE`
+
+## anthropics/skills
+
+- Source: https://github.com/anthropics/skills
+- Pinned commit: `8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4`
+- Included: complete `skills/frontend-design` and `skills/mcp-builder` directories
+- Local adaptation: frontend routing via `overlays/frontend-design/SKILL.md`; the modified Skill carries a local-change notice
+- License: Apache-2.0; retain the original `LICENSE.txt` in each included Skill directory
+- Excluded: proprietary document-format Skills; no document-format code/assets or upstream bundled media/font dependencies are redistributed
+
 Local workflow instructions and OpenUPM packaging are maintained separately in this repository.

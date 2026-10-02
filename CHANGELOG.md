@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add selected Anthropic `frontend-design` and `mcp-builder` Skills with complete supporting resources, pinned provenance, and Apache-2.0 licenses; preserve scoped frontend routing in a durable overlay and exclude `skill-creator` after confirming a review-page script-injection risk.
+- Add Vercel’s `agent-browser` Skill with pinned source attribution and Apache-2.0 license; document its separately installed CLI/browser runtime.
 - Add Vercel’s `find-skills` discovery workflow, scoped routing metadata, pinned source attribution, and MIT license; preserve project-level Skills CLI installation metadata.
 - Reject unmanaged MCP name collisions and non-boolean `enabled` values; preflight configuration and all Skill destinations before installation writes.
 - Protect all durable local Skills from upstream imports and require explicit scope for upstream apply/install.
