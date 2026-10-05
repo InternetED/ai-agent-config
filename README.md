@@ -181,7 +181,7 @@ Run the installation command again to use the current `main` branch. Pin a
 release when reproducibility matters:
 
 ```sh
-npx --yes github:InternetED/ai-agent-config#v0.7.0
+npx --yes github:InternetED/ai-agent-config#v0.8.0
 ```
 
 Releases are automated by GitHub Actions: after a `main` merge passes validation,

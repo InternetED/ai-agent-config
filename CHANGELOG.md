@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-05
+
 - Refresh the automatic Matt Pocock imports from upstream main, retaining durable overlays, standalone/manual provenance, and locally maintained Skills; compound-engineering remains at its existing upstream revision.
 - Record provenance for all 48 Skills in the upstream lock: repository, exact import paths/pins, local origins, and explicit update policies. Enforce complete unique ownership, preserve standalone/local records during refresh, update moved upstream paths, and use one revision source of truth in third-party notices. Include RTK upstream/documentation links and its verified CLI version in the bundled Skill.
 - Add opt-in RTK initialization via `--rtk claude|codex|both`, preserving explicit user/project scope, checking the separately installed binary before package writes, and delegating configuration to native RTK. Bundle setup/removal guidance without enabling RTK by default; ignore local RTK command-history databases and SQLite sidecars.
