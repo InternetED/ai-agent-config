@@ -192,6 +192,17 @@ mcp_servers.local_docs.command = "keep-me"
   assert.equal(unrelatedResult.status, 0, unrelatedResult.stderr);
   assert.ok(fs.readFileSync(path.join(unrelatedRoot, ".codex", "config.toml"), "utf8").startsWith(unrelatedToml));
 
+  const optionalRoot = path.join(temporaryHome, "optional-rtk");
+  fs.mkdirSync(optionalRoot);
+  const noRtkEnv = { ...process.env, PATH: "", Path: "" };
+  const optInMissing = spawnSync(process.execPath, [cliScript, "--scope", "project", "--project", optionalRoot, "--rtk", "claude"], { env: noRtkEnv, encoding: "utf8" });
+  assert.equal(optInMissing.status, 1, optInMissing.stdout);
+  assert.deepEqual(fs.readdirSync(optionalRoot), [], "Missing RTK must fail before installation writes");
+  const withoutRtk = spawnSync(process.execPath, [cliScript, "--scope", "project", "--project", optionalRoot], { env: noRtkEnv, encoding: "utf8" });
+  assert.equal(withoutRtk.status, 0, withoutRtk.stderr);
+  assert.equal(fs.existsSync(path.join(optionalRoot, "CLAUDE.md")), false);
+  assert.equal(fs.existsSync(path.join(optionalRoot, "AGENTS.md")), false);
+  assert.equal(fs.existsSync(path.join(optionalRoot, "RTK.md")), false);
   console.log("Integration tests passed: scoped installation, managed updates, conflict rejection, and preflight preservation.");
 } finally {
   const resolvedTemporaryHome = path.resolve(temporaryHome);

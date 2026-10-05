@@ -15,7 +15,7 @@ function fail(message) {
 }
 
 function parseArguments(argv) {
-  const options = { scope: null, project: process.cwd(), force: false, dryRun: false };
+  const options = { scope: null, project: process.cwd(), force: false, dryRun: false, rtk: null };
   while (argv.length > 0) {
     const argument = argv.shift();
     if (argument === "install") continue;
@@ -23,10 +23,12 @@ function parseArguments(argv) {
     else if (argument === "--project") options.project = path.resolve(argv.shift() ?? fail("--project requires a path"));
     else if (argument === "--force") options.force = true;
     else if (argument === "--dry-run") options.dryRun = true;
+    else if (argument === "--rtk") options.rtk = argv.shift() ?? fail("--rtk requires claude, codex, or both");
     else if (argument === "--help" || argument === "-h") options.help = true;
     else fail(`Unknown option: ${argument}`);
   }
   if (options.scope !== null && !new Set(["user", "project"]).has(options.scope)) fail("--scope must be user or project");
+  if (options.rtk !== null && !["claude", "codex", "both"].includes(options.rtk)) fail("--rtk must be claude, codex, or both");
   return options;
 }
 
@@ -44,7 +46,9 @@ Options:
   --scope SCOPE   Install for the current user or current project
   --project PATH  Project root (defaults to the current directory)
   --force         Replace colliding unmanaged Skill directories
-  --dry-run       Preview writes without changing files`);
+  --dry-run       Preview writes without changing files
+  --rtk TARGET    Opt in to RTK for claude, codex, or both (requires rtk on PATH)
+                 Project: instructions; user Claude: automatic Bash hook`);
 }
 
 async function chooseScope(options) {
@@ -74,6 +78,14 @@ if (options.help) {
 }
 
 const scope = await chooseScope(options);
+const rtkOptions = { cwd: scope === "project" ? options.project : undefined };
+if (options.rtk) {
+  for (const command of [["--version"], ["gain"], ["init", "--help"]]) {
+    const check = spawnSync("rtk", command, { encoding: "utf8" });
+    if (check.error || check.status !== 0) fail("RTK opt-in requires rtk-ai/rtk on PATH. Install it first: https://github.com/rtk-ai/rtk/blob/develop/INSTALL.md");
+    if (command[0] === "init" && !["--codex", "--auto-patch", "--no-trust-filters", "--dry-run"].every((flag) => check.stdout.includes(flag))) fail("Installed RTK lacks required init options; upgrade rtk-ai/rtk first.");
+  }
+}
 const args = [syncScript, "install", "--scope", scope, "--prune"];
 if (scope === "project") args.push("--project", options.project);
 if (options.force) args.push("--force");
@@ -81,4 +93,18 @@ if (options.dryRun) args.push("--dry-run");
 
 const result = spawnSync(process.execPath, args, { stdio: "inherit" });
 if (result.error) fail(result.error.message);
-process.exit(result.status ?? 1);
+if (result.status !== 0) process.exit(result.status ?? 1);
+if (options.rtk) {
+  const targets = options.rtk === "both" ? ["claude", "codex"] : [options.rtk];
+  for (const target of targets) {
+    const initArgs = ["init", "--no-trust-filters"];
+    if (scope === "user") initArgs.push("--global");
+    if (target === "codex") initArgs.push("--codex");
+    else initArgs.push("--auto-patch");
+    if (options.dryRun) initArgs.push("--dry-run");
+    console.log(`RTK ${target} integration (${scope} scope): delegated to rtk init`);
+    const init = spawnSync("rtk", initArgs, { ...rtkOptions, stdio: "inherit" });
+    if (init.error || init.status !== 0) fail(`Skills/MCP installation succeeded, but RTK ${target} initialization failed. ${init.error?.message ?? "Review RTK output and rerun after resolving the error."}`);
+  }
+  console.log(options.dryRun ? "RTK preview finished; nothing enabled." : "RTK initialization finished. Restart the selected agents. Hook availability depends on RTK version and agent; project Claude is prompt-based.");
+}

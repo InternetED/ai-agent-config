@@ -43,9 +43,10 @@ never credentials.
 - `Config/mcp.servers.json` contains vendor-neutral MCP definitions.
 - `Scripts/sync.mjs` validates, generates, and installs both client formats.
 
-The package includes 46 Skills: engineering workflows migrated from the former
+The package includes 47 Skills: engineering workflows migrated from the former
 `ed-engineering` plugin, package management, Vercel discovery/browser automation,
-and selected Anthropic visual-design and MCP-development workflows.
+selected Anthropic visual-design and MCP-development workflows, and optional RTK
+integration guidance.
 It does not use a Codex plugin manifest or plugin installation lifecycle.
 
 `find-skills` searches for additional skills; use `ask-matt` to select workflows
@@ -61,6 +62,41 @@ records the CLI installation for restoration with `npx skills experimental_insta
 agent-browser CLI (`agent-browser skills get core`). Adding this Skill does not
 install that CLI or its browser runtime; see the upstream installation instructions
 at https://github.com/vercel-labs/agent-browser before using browser commands.
+
+### Optional RTK integration
+
+RTK is disabled by default. The bundled, explicitly invoked `rtk` Skill provides
+setup/removal guidance; copying it does not install a binary or activate hooks.
+Install [rtk-ai/rtk](https://github.com/rtk-ai/rtk/blob/develop/INSTALL.md)
+separately, then choose the agent and scope:
+
+```sh
+# Preview first
+npx --yes github:InternetED/ai-agent-config --scope project --rtk both --dry-run
+# Enable for this project
+npx --yes github:InternetED/ai-agent-config --scope project --rtk both
+# Automatic Claude Code Bash integration across projects
+npx --yes github:InternetED/ai-agent-config --scope user --rtk claude
+```
+
+Use `--rtk codex` for Codex alone. The installer checks the binary and required
+init options before package writes, then delegates to native RTK initialization.
+It does not download/upgrade RTK or trust custom filters. Restart selected agents.
+
+With verified RTK 0.49.0, project Claude setup adds prompt instructions without a
+global hook; Codex uses `AGENTS.md` plus `RTK.md` without a hook. User Claude setup
+registers a native Bash rewrite hook and preserves unrelated settings/hooks.
+Hook behavior can change with upstream versions. Built-in Read/Grep/Glob tools
+are not routed through a Bash hook. User Claude config respects RTK's
+`CLAUDE_CONFIG_DIR` override; other locations are determined by native RTK.
+
+RTK initialization is separate from Skills/MCP installation: a later RTK failure
+returns nonzero but does not roll back an already successful package install.
+Without `--rtk`, RTK is neither checked nor initialized. Omitting the flag on a
+later install does **not** disable an existing integration. To remove it, use
+`rtk init --uninstall` (Claude) or `rtk init --codex --uninstall` from the project;
+add `--global` for user scope. Review the installed version's `init --help` first.
+Unity menu and direct `sync.mjs` installs do not initialize RTK; use the CLI opt-in.
 
 ### Selected Anthropic skills
 

@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Add opt-in RTK initialization via `--rtk claude|codex|both`, preserving explicit user/project scope, checking the separately installed binary before package writes, and delegating configuration to native RTK. Bundle setup/removal guidance without enabling RTK by default.
 - Automate stable GitHub tags and Releases after successful main validation; skip published versions, preserve existing tags, and use version-specific changelog notes with job-scoped permissions.
 
 ## [0.7.0] - 2026-10-02
