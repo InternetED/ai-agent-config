@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-02",
+  "updatedAt": "2026-10-05",
   "sources": {
     "mattpocock-skills": {
       "repository": "https://github.com/mattpocock/skills.git",
@@ -47,7 +47,49 @@
         "writing-for-agents",
         "writing-fragments",
         "writing-shape"
-      ]
+      ],
+      "updatePolicy": "automatic",
+      "skillPaths": {
+        "ask-matt": "skills/engineering/ask-matt",
+        "claude-handoff": "skills/in-progress/claude-handoff",
+        "code-review": "skills/engineering/code-review",
+        "codebase-design": "skills/engineering/codebase-design",
+        "diagnosing-bugs": "skills/engineering/diagnosing-bugs",
+        "domain-modeling": "skills/engineering/domain-modeling",
+        "git-guardrails-claude-code": "skills/misc/git-guardrails-claude-code",
+        "grill-me": "skills/productivity/grill-me",
+        "grill-with-docs": "skills/engineering/grill-with-docs",
+        "grilling": "skills/productivity/grilling",
+        "handoff": "skills/productivity/handoff",
+        "implement": "skills/engineering/implement",
+        "implement-spec": "skills/engineering/implement-spec",
+        "improve-codebase-architecture": "skills/engineering/improve-codebase-architecture",
+        "loop-me": "skills/in-progress/loop-me",
+        "migrate-to-shoehorn": "skills/misc/migrate-to-shoehorn",
+        "pr": "skills/engineering/pr",
+        "prototype": "skills/engineering/prototype",
+        "research": "skills/engineering/research",
+        "retro": "skills/engineering/retro",
+        "scaffold-exercises": "skills/misc/scaffold-exercises",
+        "setup-matt-pocock-skills": "skills/engineering/setup-matt-pocock-skills",
+        "setup-pre-commit": "skills/misc/setup-pre-commit",
+        "setup-ts-deep-modules": "skills/in-progress/setup-ts-deep-modules",
+        "tdd": "skills/engineering/tdd",
+        "teach": "skills/productivity/teach",
+        "to-questionnaire": "skills/productivity/to-questionnaire",
+        "to-spec": "skills/engineering/to-spec",
+        "to-tickets": "skills/engineering/to-tickets",
+        "triage": "skills/engineering/triage",
+        "wait-what": "skills/productivity/wait-what",
+        "wayfinder": "skills/engineering/wayfinder",
+        "wizard": "skills/engineering/wizard",
+        "writing-beats": "skills/in-progress/writing-beats",
+        "writing-for-agents": "skills/productivity/writing-for-agents",
+        "writing-fragments": "skills/in-progress/writing-fragments",
+        "writing-shape": "skills/in-progress/writing-shape"
+      },
+      "license": "MIT",
+      "licensePath": "Licenses/mattpocock-skills-LICENSE"
     },
     "compound-engineering-plugin": {
       "repository": "https://github.com/everyinc/compound-engineering-plugin.git",
@@ -58,12 +100,104 @@
       "skills": [
         "ce-commit"
       ],
-      "derivedSkills": {
-        "ed-brainstorm": {
-          "basedOn": "skills/ce-brainstorm",
-          "note": "Locally rewritten to hand off to Matt Pocock's to-spec and to-tickets workflow; never overwritten automatically."
-        }
+      "updatePolicy": "automatic",
+      "skillPaths": {
+        "ce-commit": "skills/ce-commit"
+      },
+      "license": "MIT",
+      "licensePath": "Licenses/compound-engineering-LICENSE"
+    },
+    "vercel-skills": {
+      "repository": "https://github.com/vercel-labs/skills.git",
+      "commit": "3694740352eeef5cdd689af694c485f1ff62eec3",
+      "skillPaths": {
+        "find-skills": "skills/find-skills"
+      },
+      "license": "MIT",
+      "licensePath": "Licenses/vercel-skills-LICENSE",
+      "skills": [
+        "find-skills"
+      ],
+      "updatePolicy": "manual"
+    },
+    "agent-browser": {
+      "repository": "https://github.com/vercel-labs/agent-browser.git",
+      "commit": "39a74c70d7759d5a6de7a22c04570bb626bbd081",
+      "skillPaths": {
+        "agent-browser": "skills/agent-browser"
+      },
+      "license": "Apache-2.0",
+      "licensePath": "Licenses/agent-browser-LICENSE",
+      "skills": [
+        "agent-browser"
+      ],
+      "updatePolicy": "manual"
+    },
+    "anthropic-skills": {
+      "repository": "https://github.com/anthropics/skills.git",
+      "commit": "8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4",
+      "skillPaths": {
+        "frontend-design": "skills/frontend-design",
+        "mcp-builder": "skills/mcp-builder"
+      },
+      "license": "Apache-2.0",
+      "licensePath": "Skills/<skill>/LICENSE.txt",
+      "skills": [
+        "frontend-design",
+        "mcp-builder"
+      ],
+      "updatePolicy": "manual"
+    },
+    "humanlayer-skills": {
+      "repository": "https://github.com/humanlayer/skills.git",
+      "commit": "ca7c8088db69e315a8b2deea43820270457f8f3c",
+      "skillPaths": {
+        "show-me": "plugins/show-me/skills/show-me"
+      },
+      "license": "MIT",
+      "licensePath": "Skills/show-me/LICENSE.txt",
+      "skills": [
+        "show-me"
+      ],
+      "updatePolicy": "manual"
+    }
+  },
+  "localSkills": {
+    "ed-brainstorm": {
+      "repository": "https://github.com/InternetED/ai-agent-config.git",
+      "path": "Skills/ed-brainstorm",
+      "updatePolicy": "local",
+      "derivedFrom": {
+        "repository": "https://github.com/everyinc/compound-engineering-plugin.git",
+        "path": "skills/ce-brainstorm",
+        "commit": null,
+        "note": "Locally rewritten; the exact original derivation revision was not recorded. Never overwrite from upstream."
       }
+    },
+    "manage-ai-agent-config": {
+      "repository": "https://github.com/InternetED/ai-agent-config.git",
+      "path": "Skills/manage-ai-agent-config",
+      "updatePolicy": "local"
+    },
+    "rtk": {
+      "repository": "https://github.com/InternetED/ai-agent-config.git",
+      "path": "Skills/rtk",
+      "updatePolicy": "local",
+      "references": [
+        "https://github.com/rtk-ai/rtk",
+        "https://github.com/rtk-ai/rtk/blob/develop/INSTALL.md"
+      ],
+      "note": "Locally authored integration guidance based on rtk-ai/rtk documentation and native CLI behavior verified with RTK 0.49.0; not an imported RTK Skill."
+    },
+    "security-review": {
+      "repository": "https://github.com/InternetED/ai-agent-config.git",
+      "path": "Skills/security-review",
+      "updatePolicy": "local"
+    },
+    "verification-before-completion": {
+      "repository": "https://github.com/InternetED/ai-agent-config.git",
+      "path": "Skills/verification-before-completion",
+      "updatePolicy": "local"
     }
   }
 }

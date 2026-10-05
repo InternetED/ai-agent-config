@@ -141,6 +141,10 @@ try {
   assert.notEqual(protectedResult.status, 0);
   assert.match(protectedResult.stderr, /security-review.*locally maintained skill/);
 
+  const externalConflict = createFixture("external-conflict", { protectedCandidate: "show-me" });
+  const externalResult = invoke(externalConflict, ["--apply"]);
+  assert.equal(externalResult.status, 1);
+  assert.match(externalResult.stderr, /show-me.*locally maintained skill/);
   const invalidInstall = createFixture("invalid-install");
   const invalidProject = path.join(invalidInstall.root, "project");
   fs.mkdirSync(invalidProject);
@@ -159,6 +163,13 @@ try {
   assert.equal(JSON.parse(fs.readFileSync(path.join(projectRoot, ".ai-agent-config", "state.json"), "utf8")).scope, "project");
   assert.equal(fs.existsSync(path.join(projectRoot, ".agents", "skills", "ask-matt", "SKILL.md")), true);
 
+  const appliedLock = JSON.parse(fs.readFileSync(path.join(successfulApply.root, "upstreams.lock.json"), "utf8"));
+  const originalLock = JSON.parse(fs.readFileSync(path.join(sourceRoot, "upstreams.lock.json"), "utf8"));
+  assert.equal(appliedLock.sources["mattpocock-skills"].skillPaths["ask-matt"], "skills/ask-matt", "source paths must follow upstream directory moves");
+  assert.deepEqual(appliedLock.localSkills, originalLock.localSkills, "refresh must preserve local origins");
+  for (const [id, source] of Object.entries(originalLock.sources)) {
+    if (source.updatePolicy === "manual") assert.deepEqual(appliedLock.sources[id], source, `refresh must preserve standalone source ${id}`);
+  }
   console.log("Upstream regression tests passed: explicit scope, protected locals, staged validation, and scoped install.");
 } finally {
   fs.rmSync(temporaryRoot, { recursive: true, force: true });

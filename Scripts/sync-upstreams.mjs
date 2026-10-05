@@ -12,12 +12,6 @@ const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(scriptDirectory, "..");
 const skillsRoot = path.join(packageRoot, "Skills");
 const lockPath = path.join(packageRoot, "upstreams.lock.json");
-const protectedLocalNames = new Set([
-  "ed-brainstorm",
-  "manage-ai-agent-config",
-  "security-review",
-  "verification-before-completion",
-]);
 
 function fail(message) {
   throw new Error(message);
@@ -150,6 +144,7 @@ function stageRepository(stagingRoot) {
 
 function validateStagedSkills(stagingRoot) {
   run(process.execPath, [path.join(stagingRoot, "Scripts", "sync.mjs"), "check"]);
+  run(process.execPath, [path.join(stagingRoot, "Scripts", "skill-health.mjs")]);
 }
 
 function promoteStagedFiles(stagingRoot, paths) {
@@ -200,17 +195,22 @@ if (options.overlaysOnly) {
 } else {
   const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "ai-agent-config-upstreams-"));
   try {
+    const lock = readLock();
+    const protectedLocalNames = new Set([
+      ...Object.keys(lock.localSkills),
+      ...Object.entries(lock.sources).filter(([id]) => id !== "mattpocock-skills").flatMap(([, source]) => source.skills),
+    ]);
     const mattRoot = path.join(temporaryRoot, "mattpocock-skills");
     const compoundRoot = path.join(temporaryRoot, "compound-engineering");
-    const mattCommit = cloneAtRef("https://github.com/mattpocock/skills.git", options.mattRef, mattRoot);
-    const compoundCommit = cloneAtRef("https://github.com/everyinc/compound-engineering-plugin.git", options.compoundRef, compoundRoot);
+    const mattCommit = cloneAtRef(lock.sources["mattpocock-skills"].repository, options.mattRef, mattRoot);
+    const compoundCommit = cloneAtRef(lock.sources["compound-engineering-plugin"].repository, options.compoundRef, compoundRoot);
 
     const mattDirectories = findSkillDirectories(path.join(mattRoot, "skills"));
     const seen = new Set();
     const candidates = [];
     for (const source of mattDirectories) {
       const name = path.basename(source);
-      if (protectedLocalNames.has(name) || name === "ce-commit") fail(`Upstream skill '${name}' conflicts with a locally maintained skill`);
+      if (protectedLocalNames.has(name)) fail(`Upstream skill '${name}' conflicts with a locally maintained skill`);
       if (seen.has(name)) fail(`Matt Pocock's repository contains duplicate skill name '${name}'`);
       seen.add(name);
       convertToPortableSkill(source);
@@ -221,7 +221,6 @@ if (options.overlaysOnly) {
     convertToPortableSkill(commitSource);
     candidates.push({ source: "everyinc/compound-engineering-plugin", name: "ce-commit", path: commitSource });
 
-    const lock = readLock();
     const previousMattSkills = lock.sources["mattpocock-skills"].skills ?? [];
     const currentMattSkills = [...seen].sort();
     const removed = previousMattSkills.filter((name) => !seen.has(name));
@@ -253,8 +252,12 @@ if (options.overlaysOnly) {
         lock.updatedAt = new Date().toISOString().slice(0, 10);
         lock.sources["mattpocock-skills"].commit = mattCommit;
         lock.sources["mattpocock-skills"].skills = currentMattSkills;
+        lock.sources["mattpocock-skills"].skillPaths = Object.fromEntries(mattDirectories.map((directory) => [
+          path.basename(directory), path.relative(mattRoot, directory).split(path.sep).join("/"),
+        ]));
         lock.sources["compound-engineering-plugin"].commit = compoundCommit;
         lock.sources["compound-engineering-plugin"].skills = ["ce-commit"];
+        lock.sources["compound-engineering-plugin"].skillPaths = { "ce-commit": "skills/ce-commit" };
         writeLock(stagingRoot, lock);
 
         runOverlays(stagingRoot, "Post-upstream");

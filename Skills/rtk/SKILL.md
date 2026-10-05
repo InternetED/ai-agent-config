@@ -10,6 +10,15 @@ RTK compresses CLI output. Installing this Skill does not install its binary,
 register hooks, or authorize activation. Never enable RTK without the user's
 explicit request and choice of agent and user/project scope.
 
+## Source
+
+- RTK upstream: https://github.com/rtk-ai/rtk
+- Installation reference: https://github.com/rtk-ai/rtk/blob/develop/INSTALL.md
+- Guidance verified with RTK 0.49.0; review the installed CLI help before setup/removal.
+- This Skill is authored in https://github.com/InternetED/ai-agent-config/tree/main/Skills/rtk,
+  not copied from an upstream RTK Skill. Update the guidance against RTK documentation
+  and native CLI behavior; do not replace it automatically with upstream files.
+
 ## Use when / Not for
 
 Use when explicitly asked to configure, inspect, or remove RTK. Not for routine

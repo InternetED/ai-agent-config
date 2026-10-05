@@ -26,10 +26,14 @@ For a skill change, keep the skill portable across Claude Code and Codex unless
 the request explicitly requires a platform extension. For an MCP change, store
 environment-variable names rather than credential values.
 
-Do not change `upstreams.lock.json` unless the task is an upstream refresh.
-Local skill `ed-brainstorm` must never be overwritten by the upstream updater.
-Durable edits to upstream-synced skills belong under `overlays/` (see Maintaining ownership split + correction-driven growth);
-do not expect bare `Skills/` edits alone to survive `npm run upstreams -- --apply`. Local-only skills (`ed-brainstorm`, this skill, `security-review`, `verification-before-completion`) stay in `Skills/` without overlays.
+Record every added/removed Skill in `upstreams.lock.json`: source repository,
+exact upstream directory and commit for imports, or `localSkills` for originals.
+Preserve existing pins unless intentionally refreshing that source. Keep
+attribution/licenses in `THIRD_PARTY_NOTICES.md`; do not duplicate revision pins.
+Local Skills must never be overwritten by the upstream updater.
+Durable edits to automatically synced Skills belong under `overlays/`; for manual
+imports, reconcile local adaptations before replacing files. Original/local
+Skills stay in `Skills/` without overlays. Read Maintaining for update policies.
 
 **Human gate:** open a **Draft** PR for skill/MCP authority changes; do not merge yourself. Do not push destructive git operations without an explicit user request.
 

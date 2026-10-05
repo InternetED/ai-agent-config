@@ -8,7 +8,7 @@ Edit only these authoritative inputs:
 - Add and update MCP servers in `Config/mcp.servers.json`.
 - Change translation behavior in `Scripts/sync.mjs` only when a client format
   changes.
-- Treat `upstreams.lock.json` as the record of imported Skill provenance.
+- Treat `upstreams.lock.json` as the source/path/revision and update-policy registry for every Skill, including local Skills.
 - Put durable local edits to upstream-synced skills under `overlays/<skill>/`
   (see Local overlays below). Do not rely on hand-edits inside `Skills/` alone
   if the next `npm run upstreams -- --apply` should keep them.
@@ -21,8 +21,8 @@ scope on a user's behalf.
 
 | Layer | What lives here | Survives `upstreams --apply`? |
 | --- | --- | --- |
-| **Upstream** | Skills named in `upstreams.lock.json` (`mattpocock-skills`, `compound-engineering-plugin`). Imported copies under `Skills/`. | Import overwrites `Skills/<name>/` for those names, then overlays re-apply. |
-| **Local durable** | Intentionally local skills: `ed-brainstorm`, `manage-ai-agent-config`, `security-review`, `verification-before-completion`. Not in the upstream overwrite set / protected. | Yes — edit `Skills/` directly; no overlay needed. |
+| **Upstream** | Imported Skills recorded in `sources` of `upstreams.lock.json`; `automatic` selects the two supported upstream adapters, `manual` marks standalone imports. | Automatic sources are refreshed and overlays re-apply; manual sources are unchanged. |
+| **Local durable** | Original/rewritten Skills recorded in `localSkills`, including `rtk`. | Yes — edit `Skills/` directly; no overlay needed. |
 | **Overlay** | Durable local deltas on upstream-synced skills under `overlays/<skill>/`. | Yes — re-applied after every `--apply` and via `npm run overlays`. |
 
 Do **not** invent a mega-router skill. Do **not** recreate `ed-workflow`. Prefer improving an existing skill over adding a new one.
@@ -34,9 +34,40 @@ hyphens for the directory and `name`. Include concise `name` and `description`
 frontmatter. Keep the shared workflow portable; place Codex-only UI metadata in
 `agents/openai.yaml` only when it adds value.
 
-Run `node Scripts/sync.mjs check`. Completion means every direct child of
-`Skills/` has a valid `SKILL.md`, every skill name matches its directory, and
-the integration tests pass.
+Register its provenance in `upstreams.lock.json` and attribution/license in
+`THIRD_PARTY_NOTICES.md` when imported. Run `node Scripts/sync.mjs check` and
+`npm run skill-health`; run the affected integration tests.
+
+## Skill provenance registry
+
+Every direct child of `Skills/` must have exactly one owner in
+`upstreams.lock.json`: an entry in `sources.<id>.skills` or `localSkills.<name>`.
+`npm run skill-health` rejects missing/duplicate/orphan records, missing pins,
+and missing or unsafe upstream paths. Upstream apply validates this in staging.
+
+For imported Skills, record `repository`, full 40-character `commit`, `skills`,
+per-Skill directory `skillPaths`, license/location, and `updatePolicy`:
+
+- `automatic`: currently only Matt Pocock and compound-engineering imports.
+  `npm run upstreams -- --apply` refreshes their commit, selection, and exact
+  upstream paths from the fetched tree. Overlays re-apply afterward.
+- `manual`: Vercel, Anthropic, and HumanLayer standalone imports. They are
+  recorded but not fetched by `npm run upstreams`. Compare the pinned directory
+  against the desired upstream revision; review local adaptations and license
+  changes, update the selected files/pin/path together, and re-apply overlays.
+  Keep full-file local overlays and other intentional rewrites during review;
+  do not blindly overwrite them with upstream content.
+
+For original/local rewrites, record this repository, `Skills/<name>`, and
+`updatePolicy: local`. `ed-brainstorm` retains `derivedFrom` information, with
+the exact original derivation revision explicitly unknown (`commit: null`).
+`rtk` is local integration guidance; its external tool URL is a reference, not
+an imported Skill source. Local history is tracked by this repository, not a
+self-referential commit pin inside its own lock file.
+
+`THIRD_PARTY_NOTICES.md` points to lock pins instead of duplicating them.
+`skills-lock.json` belongs to the external Skills CLI installations, not the
+authoritative `Skills/` library. Do not use it as provenance for package updates.
 
 ## Update imported Skills
 
@@ -64,9 +95,9 @@ leave live Skills, licenses, lock pins, and client files unchanged. Promotion
 rolls back synchronous rename failures; this is not a crash-safe transaction
 across repository and client files.
 
-The updater owns the Skill names recorded under each source in
-`upstreams.lock.json` and rejects upstream collisions with all four durable local
-Skills listed above. Review the resulting Git diff before release.
+The updater owns only the Skill selections for its two automatic source adapters.
+It rejects upstream collisions with every local Skill and other registered source
+selection. Review the resulting Git diff before release.
 
 ### Frontmatter portability policy
 
@@ -115,15 +146,15 @@ Rules:
   against the planned replacement `SKILL.md`, not the old target, without writes.
 - Skill health requires full-file `SKILL.md` overlays to have frontmatter and an
   effective name matching the directory; `frontmatter.yaml` may supply that name.
-- Prefer overlays over adding an upstream skill to `protectedLocalNames` unless
-  the skill is intentionally local-only (see the ownership table above).
+- Prefer overlays for automatically synced Skills. Move a Skill into `localSkills`
+  only when it is intentionally rewritten and must no longer receive upstream replacements.
 
 ### When to overlay vs fork
 
 | Situation | Mechanism |
 | --- | --- |
 | Keep receiving upstream file updates, but re-assert a few keys or files | `overlays/<skill>/…` |
-| Skill is rewritten for this package and must never be overwritten | Keep out of the upstream lock set / use `protectedLocalNames` (`ed-brainstorm`) |
+| Skill is rewritten for this package and must never be overwritten | Record it in `localSkills`, not an imported source selection (`ed-brainstorm`). |
 | One-off experiment you do not care about after the next apply | Edit `Skills/` only (will be wiped on apply) |
 
 ### What to put in an overlay (prefer thin)

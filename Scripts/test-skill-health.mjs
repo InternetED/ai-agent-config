@@ -44,10 +44,39 @@ description: Demo. Use when testing health; Not for production.
     path.join(fixture, "overlays", "demo", "frontmatter.yaml"),
     "disable-model-invocation: true\n",
   );
+  const provenance = {"schemaVersion":1,"sources":{},"localSkills":{"demo":{"repository":"https://github.com/InternetED/ai-agent-config.git","path":"Skills/demo","updatePolicy":"local"}}};
+  const provenancePath = path.join(fixture, "upstreams.lock.json");
+  const writeProvenance = () => write(provenancePath, JSON.stringify(provenance));
+  writeProvenance();
 
   let result = runHealth(fixture);
   assert.equal(result.status, 0, `fixture healthy failed:\n${result.stderr}`);
   assert.equal(result.stdout, "");
+
+  delete provenance.localSkills.demo;
+  writeProvenance();
+  result = runHealth(fixture);
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /skill provenance missing: demo/);
+  provenance.localSkills.demo = { repository: "https://github.com/InternetED/ai-agent-config.git", path: "Skills/demo", updatePolicy: "local" };
+  provenance.sources.external = { repository: "https://github.com/example/skills.git", commit: "a".repeat(40), skills: ["demo"], skillPaths: { demo: "skills/demo" }, updatePolicy: "manual" };
+  writeProvenance();
+  result = runHealth(fixture);
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /duplicate skill provenance: demo/);
+  delete provenance.localSkills.demo;
+  provenance.sources.external.commit = "main";
+  provenance.sources.external.skillPaths.demo = "../demo";
+  writeProvenance();
+  result = runHealth(fixture);
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /source requires repository and pinned commit/);
+  assert.match(result.stderr, /source path missing or unsafe/);
+  provenance.sources.external.commit = "a".repeat(40);
+  provenance.sources.external.skillPaths.demo = "skills/demo";
+  writeProvenance();
+  result = runHealth(fixture);
+  assert.equal(result.status, 0, result.stderr);
 
   // Orphan overlay.
   write(path.join(fixture, "overlays", "ghost", "frontmatter.yaml"), "disable-model-invocation: true\n");

@@ -49,12 +49,18 @@ selected Anthropic visual-design and MCP-development workflows, and HumanLayer's
 `show-me` visual explanations, plus optional RTK integration guidance.
 It does not use a Codex plugin manifest or plugin installation lifecycle.
 
+All 48 Skills have provenance in `upstreams.lock.json`: source repository, exact
+upstream directory and commit for imports, or local origin for original Skills.
+Update policy distinguishes automatic refresh, manual reconciliation, and local
+maintenance. `npm run skill-health` enforces complete, unique source coverage.
+See `Documentation~/Maintaining.md` for the source registry and update procedure.
+
 `find-skills` searches for additional skills; use `ask-matt` to select workflows
-already bundled here. Its source pin and MIT license are recorded in
-`THIRD_PARTY_NOTICES.md`; local routing metadata lives in
+already bundled here. Its source pin is recorded in `upstreams.lock.json`; MIT
+attribution is in `THIRD_PARTY_NOTICES.md` and local routing metadata lives in
 `overlays/find-skills/frontmatter.yaml`. The standalone Vercel and Anthropic
-imports are not refreshed by `npm run upstreams`; their source pins and licenses
-are recorded in `THIRD_PARTY_NOTICES.md`. Project installs made with `npx skills add` live
+imports are not refreshed by `npm run upstreams`; their pins and update policies
+are recorded in `upstreams.lock.json`. Project installs made with `npx skills add` live
 in ignored `.agents/skills/` and `.claude/skills/` directories; `skills-lock.json`
 records the CLI installation for restoration with `npx skills experimental_install`.
 
@@ -109,8 +115,8 @@ rather than implementing a product UI.
 HTML artifacts use the available browser tool or a Windows/macOS/Linux launcher.
 Remote/headless sessions receive a path or supported preview link when opening
 is unavailable. The MIT license travels with the installed Skill. This standalone
-HumanLayer import is not refreshed by `npm run upstreams`; its source pin and
-local adaptations are recorded in `THIRD_PARTY_NOTICES.md`.
+HumanLayer import is not refreshed by `npm run upstreams`; its source pin is in
+`upstreams.lock.json`, with local adaptations described in `THIRD_PARTY_NOTICES.md`.
 
 ### Selected Anthropic skills
 

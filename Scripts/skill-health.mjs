@@ -69,6 +69,54 @@ function hasUseWhen(contents) {
   // Trigger may live in description frontmatter and/or body.
   return /use\s+when/i.test(contents);
 }
+function collectSourceProblems(packageRoot, skillNames) {
+  const problems = [];
+  let lock;
+  try {
+    lock = JSON.parse(fs.readFileSync(path.join(packageRoot, "upstreams.lock.json"), "utf8"));
+  } catch (error) {
+    return [`skill provenance unavailable: ${error.message}`];
+  }
+  const isObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+  if (!isObject(lock) || lock.schemaVersion !== 1 || !isObject(lock.sources) || !isObject(lock.localSkills)) {
+    return ["skill provenance requires schemaVersion 1, sources, and localSkills"];
+  }
+  const owners = new Set();
+  const register = (name) => {
+    if (owners.has(name)) problems.push(`duplicate skill provenance: ${name}`);
+    owners.add(name);
+    if (!skillNames.has(name)) problems.push(`orphan skill provenance: ${name}`);
+  };
+  const validPath = (value) => typeof value === "string" && value.split("/").every((part) => /^[a-zA-Z0-9_.-]+$/.test(part) && part !== "." && part !== "..");
+  for (const [id, source] of Object.entries(lock.sources)) {
+    if (!isObject(source) || !Array.isArray(source.skills) || !isObject(source.skillPaths)) {
+      problems.push(`invalid source provenance: ${id}`);
+      continue;
+    }
+    if (typeof source.repository !== "string" || !source.repository.startsWith("https://github.com/") || !/^[a-f0-9]{40}$/.test(source.commit ?? "")) {
+      problems.push(`source requires repository and pinned commit: ${id}`);
+    }
+    if (!["automatic", "manual"].includes(source.updatePolicy)) problems.push(`invalid source update policy: ${id}`);
+    for (const name of source.skills) {
+      register(name);
+      if (!validPath(source.skillPaths[name])) problems.push(`source path missing or unsafe: ${id}/${name}`);
+    }
+    for (const name of Object.keys(source.skillPaths)) {
+      if (!source.skills.includes(name)) problems.push(`unowned source path: ${id}/${name}`);
+    }
+  }
+  for (const [name, source] of Object.entries(lock.localSkills)) {
+    register(name);
+    if (!isObject(source) || typeof source.repository !== "string" || !source.repository.startsWith("https://github.com/") || source.path !== `Skills/${name}` || source.updatePolicy !== "local") {
+      problems.push(`invalid local skill provenance: ${name}`);
+    }
+  }
+  for (const name of skillNames) {
+    if (!owners.has(name)) problems.push(`skill provenance missing: ${name}`);
+  }
+  return problems;
+}
+
 
 function collectProblems(packageRoot) {
   const { skillsRoot, overlaysRoot } = resolveRoots(packageRoot);
@@ -137,6 +185,7 @@ function collectProblems(packageRoot) {
     problems.push("deleted skill overlay present: overlays/ed-workflow/ exists");
   }
 
+  problems.push(...collectSourceProblems(packageRoot, skillNames));
   return problems;
 }
 
