@@ -41,4 +41,13 @@ This package bundles selected work from the following open-source projects.
 - License: Apache-2.0; retain the original `LICENSE.txt` in each included Skill directory
 - Excluded: proprietary document-format Skills; no document-format code/assets or upstream bundled media/font dependencies are redistributed
 
+## humanlayer/skills
+
+- Source: https://github.com/humanlayer/skills
+- Pinned commit: `ca7c8088db69e315a8b2deea43820270457f8f3c`
+- Included: `plugins/show-me/skills/show-me/SKILL.md` and `agents/openai.yaml`
+- Local adaptation: explicit Use when / Not for boundaries, cross-platform HTML opening and headless delivery, and rendered-artifact verification in `Skills/show-me/SKILL.md`
+- License: MIT; retain `Skills/show-me/LICENSE.txt` with installed copies
+- Update policy: standalone import, not refreshed by `npm run upstreams`
+
 Local workflow instructions and OpenUPM packaging are maintained separately in this repository.

@@ -43,10 +43,10 @@ never credentials.
 - `Config/mcp.servers.json` contains vendor-neutral MCP definitions.
 - `Scripts/sync.mjs` validates, generates, and installs both client formats.
 
-The package includes 47 Skills: engineering workflows migrated from the former
+The package includes 48 Skills: engineering workflows migrated from the former
 `ed-engineering` plugin, package management, Vercel discovery/browser automation,
-selected Anthropic visual-design and MCP-development workflows, and optional RTK
-integration guidance.
+selected Anthropic visual-design and MCP-development workflows, and HumanLayer's
+`show-me` visual explanations, plus optional RTK integration guidance.
 It does not use a Codex plugin manifest or plugin installation lifecycle.
 
 `find-skills` searches for additional skills; use `ask-matt` to select workflows
@@ -97,6 +97,20 @@ later install does **not** disable an existing integration. To remove it, use
 `rtk init --uninstall` (Claude) or `rtk init --codex --uninstall` from the project;
 add `--global` for user scope. Review the installed version's `init --help` first.
 Unity menu and direct `sync.mjs` installs do not initialize RTK; use the CLI opt-in.
+
+### Visual explanations with show-me
+
+Ask `Use show-me to explain this flow visually` in Claude Code or Codex.
+The Skill chooses a compact tree, pseudocode, Mermaid diagram, diff, or a focused
+HTML artifact rather than a long prose explanation. It is explicitly invoked,
+not automatically selected; it complements `frontend-design` and `prototype`
+rather than implementing a product UI.
+
+HTML artifacts use the available browser tool or a Windows/macOS/Linux launcher.
+Remote/headless sessions receive a path or supported preview link when opening
+is unavailable. The MIT license travels with the installed Skill. This standalone
+HumanLayer import is not refreshed by `npm run upstreams`; its source pin and
+local adaptations are recorded in `THIRD_PARTY_NOTICES.md`.
 
 ### Selected Anthropic skills
 
