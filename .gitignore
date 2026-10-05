@@ -9,3 +9,8 @@ Temp/
 obj/
 .agents/skills/
 .claude/skills/
+
+# RTK runtime command history and SQLite sidecars.
+/rtk/history.db
+/rtk/history.db-shm
+/rtk/history.db-wal
