@@ -38,8 +38,8 @@ this file records attribution, licensing, and local adaptation rather than dupli
 
 - Source: https://github.com/anthropics/skills
 - Pinned commit: `upstreams.lock.json` → `sources.anthropic-skills.commit`
-- Included: complete `skills/frontend-design` and `skills/mcp-builder` directories
-- Local adaptation: frontend routing via `overlays/frontend-design/SKILL.md`; the modified Skill carries a local-change notice
+- Included: complete `skills/frontend-design` directory
+- Local adaptation: frontend routing via `overlays/frontend-design/SKILL.md`; the modified Skill carries a local-change notice.
 - License: Apache-2.0; retain the original `LICENSE.txt` in each included Skill directory
 - Excluded: proprietary document-format Skills; no document-format code/assets or upstream bundled media/font dependencies are redistributed
 
@@ -51,5 +51,12 @@ this file records attribution, licensing, and local adaptation rather than dupli
 - Local adaptation: explicit Use when / Not for boundaries, cross-platform HTML opening and headless delivery, and rendered-artifact verification in `Skills/show-me/SKILL.md`
 - License: MIT; retain `Skills/show-me/LICENSE.txt` with installed copies
 - Update policy: standalone import, not refreshed by `npm run upstreams`
+
+## Optional external tool: NVIDIA/skillspector
+
+- Source: https://github.com/NVIDIA/skillspector
+- Dependency pin: `requirements-skillspector.txt` (separate from the per-Skill registry)
+- License: Apache-2.0; upstream https://github.com/NVIDIA/skillspector/blob/main/LICENSE
+- Installed only by the opt-in `npm run skillspector:install` command into the ignored project-local `.venv-skillspector/`; upstream code and its dependencies are not bundled in this package.
 
 Local workflow instructions and OpenUPM packaging are maintained separately in this repository.

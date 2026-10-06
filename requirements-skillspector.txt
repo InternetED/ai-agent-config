@@ -1,0 +1,3 @@
+# NVIDIA SkillSpector (Apache-2.0), project-local CLI dependency.
+# Upstream: https://github.com/NVIDIA/skillspector
+skillspector @ git+https://github.com/NVIDIA/skillspector.git@b6f03047a9acb9b1975aa3787eb72894ef28d2aa

@@ -9,6 +9,7 @@ Temp/
 obj/
 .agents/skills/
 .claude/skills/
+/.venv-skillspector/
 
 # RTK runtime command history and SQLite sidecars.
 /rtk/history.db

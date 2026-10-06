@@ -43,13 +43,13 @@ never credentials.
 - `Config/mcp.servers.json` contains vendor-neutral MCP definitions.
 - `Scripts/sync.mjs` validates, generates, and installs both client formats.
 
-The package includes 48 Skills: engineering workflows migrated from the former
+The package includes 47 Skills: engineering workflows migrated from the former
 `ed-engineering` plugin, package management, Vercel discovery/browser automation,
-selected Anthropic visual-design and MCP-development workflows, and HumanLayer's
-`show-me` visual explanations, plus optional RTK integration guidance.
+Anthropic visual-design guidance, and HumanLayer's `show-me` visual explanations,
+plus optional RTK integration guidance.
 It does not use a Codex plugin manifest or plugin installation lifecycle.
 
-All 48 Skills have provenance in `upstreams.lock.json`: source repository, exact
+All 47 Skills have provenance in `upstreams.lock.json`: source repository, exact
 upstream directory and commit for imports, or local origin for original Skills.
 Update policy distinguishes automatic refresh, manual reconciliation, and local
 maintenance. `npm run skill-health` enforces complete, unique source coverage.
@@ -104,6 +104,39 @@ later install does **not** disable an existing integration. To remove it, use
 add `--global` for user scope. Review the installed version's `init --help` first.
 Unity menu and direct `sync.mjs` installs do not initialize RTK; use the CLI opt-in.
 
+### Optional project-local SkillSpector scanner
+
+[NVIDIA SkillSpector](https://github.com/NVIDIA/skillspector) is a Python security
+scanner, not an agent Skill. From this repository checkout, install
+[uv](https://docs.astral.sh/uv/getting-started/installation/) and Git, then run:
+
+```sh
+npm run skillspector:install
+npm run skillspector -- --version
+npm run skillspector:scan
+# Scan one Skill independently:
+npm run skillspector -- scan Skills/verification-before-completion --no-llm
+```
+
+The install command creates `.venv-skillspector/` with Python 3.12 (uv downloads
+Python if needed) and installs the upstream commit pinned in
+`requirements-skillspector.txt`. The environment is ignored by Git and excluded
+from package distribution; no global CLI, MCP server, hooks, or CI gate is
+enabled. Other contributors must run the install command themselves. The normal
+Skills/MCP installer does not install SkillSpector.
+
+`skillspector:scan` scans `Skills/` recursively with LLM analysis disabled, so no
+LLM API key is required and skill content is not sent to an LLM. Static dependency
+checks may still query OSV.dev; `--no-llm` is not an offline guarantee. To export
+JSON, append `-- --format json --output <existing-directory>/report.json`.
+
+Recursive scans enforce aggregate safety limits. The initial SkillSpector 2.12.0
+scan, before the MCP builder removal, covered 32 of 48 skills and reported 16
+omitted. A partial report is not full coverage: scan individual Skill directories
+to cover omitted entries. Review execution status and findings rather than only
+the exit code; risk findings and incomplete scans can return nonzero. Static
+findings require contextual review and do not prove a vulnerability or safety.
+
 ### Visual explanations with show-me
 
 Ask `Use show-me to explain this flow visually` in Claude Code or Codex.
@@ -118,19 +151,16 @@ is unavailable. The MIT license travels with the installed Skill. This standalon
 HumanLayer import is not refreshed by `npm run upstreams`; its source pin is in
 `upstreams.lock.json`, with local adaptations described in `THIRD_PARTY_NOTICES.md`.
 
-### Selected Anthropic skills
+### Selected Anthropic skill
 
 | Skill | Gap filled | Existing workflow boundary |
 | --- | --- | --- |
 | `frontend-design` | Visual direction, typography, layout, and UI critique | `prototype` explores UI/state; `agent-browser` automates browser interaction. |
-| `mcp-builder` | Implement MCP servers with TypeScript/Python SDKs and evaluations | `manage-ai-agent-config` manages definitions and installation, not server implementation. |
 
-The complete MCP scripts/references and per-skill Apache-2.0 licenses are bundled.
-Durable frontend routing adaptations live under `overlays/frontend-design/`.
-Public upstream CLI installs/restores do not apply that local overlay; use this
-package’s installer for its adapted Skills. MCP model-backed evaluations require
-the dependencies in `Skills/mcp-builder/scripts/requirements.txt` and Anthropic
-API access. Adding the Skills does not install those dependencies.
+The frontend-design Skill and its Apache-2.0 license are bundled. Durable frontend
+routing adaptations live under `overlays/frontend-design/`. Public upstream CLI
+installs/restores do not apply that local overlay; use this package’s installer
+for its adapted Skill.
 
 `skill-creator` was evaluated but is not included: its review generator embeds
 unescaped JSON in a script element. A harmless browser smoke confirmed that

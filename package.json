@@ -35,6 +35,9 @@
     "test": "node Scripts/test.mjs && node Scripts/test-overlays.mjs && node Scripts/test-skill-health.mjs && node Scripts/test-upstreams.mjs",
     "upstreams": "node Scripts/sync-upstreams.mjs",
     "overlays": "node Scripts/overlays.mjs",
-    "skill-health": "node Scripts/skill-health.mjs"
+    "skill-health": "node Scripts/skill-health.mjs",
+    "skillspector:install": "uv venv .venv-skillspector --python 3.12 && uv pip install --python .venv-skillspector -r requirements-skillspector.txt",
+    "skillspector": "uv run --no-project --python .venv-skillspector skillspector",
+    "skillspector:scan": "npm run skillspector -- scan Skills/ --recursive --no-llm"
   }
 }

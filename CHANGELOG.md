@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Add optional project-local NVIDIA SkillSpector installation with a pinned upstream dependency, isolated Python environment, static scan commands, and documented recursive coverage limits; leave global configuration and Skills/MCP installation unchanged.
+- Remove `mcp-builder`, its bundled evaluation scripts/references, durable overlays, provenance and project installation records, and dedicated tests; retain SkillSpector and reduce the library to 47 Skills.
+
 ## [0.8.0] - 2026-10-05
 
 - Refresh the automatic Matt Pocock imports from upstream main, retaining durable overlays, standalone/manual provenance, and locally maintained Skills; compound-engineering remains at its existing upstream revision.
