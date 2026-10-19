@@ -1,16 +1,17 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-06",
+  "updatedAt": "2026-10-19",
   "sources": {
     "mattpocock-skills": {
       "repository": "https://github.com/mattpocock/skills.git",
-      "commit": "24fe0ef7737efae15c87225755e9f6f5965e4888",
+      "commit": "49dd158d1076134a641b33efb035946536778336",
       "paths": [
         "skills/*/*"
       ],
       "selectionRule": "Import every directory below skills/ that contains SKILL.md; category maturity does not exclude it.",
       "skills": [
         "ask-matt",
+        "chief-of-staff",
         "claude-handoff",
         "code-review",
         "codebase-design",
@@ -70,6 +71,7 @@
         "triage": "skills/engineering/triage",
         "wayfinder": "skills/engineering/wayfinder",
         "wizard": "skills/engineering/wizard",
+        "chief-of-staff": "skills/in-progress/chief-of-staff",
         "claude-handoff": "skills/in-progress/claude-handoff",
         "loop-me": "skills/in-progress/loop-me",
         "setup-ts-deep-modules": "skills/in-progress/setup-ts-deep-modules",
@@ -93,7 +95,7 @@
     },
     "compound-engineering-plugin": {
       "repository": "https://github.com/everyinc/compound-engineering-plugin.git",
-      "commit": "9af474a70e7f2a844338519ad9e92aafbd92d4fb",
+      "commit": "2e41b4490a37f53db0beb6d4904618da9af2f559",
       "paths": [
         "skills/ce-commit"
       ],
@@ -109,7 +111,7 @@
     },
     "vercel-skills": {
       "repository": "https://github.com/vercel-labs/skills.git",
-      "commit": "3694740352eeef5cdd689af694c485f1ff62eec3",
+      "commit": "13e4063a1cf913f5606d57d42ab83a86f5001e04",
       "skillPaths": {
         "find-skills": "skills/find-skills"
       },
@@ -122,7 +124,7 @@
     },
     "agent-browser": {
       "repository": "https://github.com/vercel-labs/agent-browser.git",
-      "commit": "39a74c70d7759d5a6de7a22c04570bb626bbd081",
+      "commit": "dac13bb87468fe9d74a040d862720f6cc17a9565",
       "skillPaths": {
         "agent-browser": "skills/agent-browser"
       },
@@ -135,7 +137,7 @@
     },
     "anthropic-skills": {
       "repository": "https://github.com/anthropics/skills.git",
-      "commit": "8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4",
+      "commit": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "skillPaths": {
         "frontend-design": "skills/frontend-design"
       },
@@ -148,7 +150,7 @@
     },
     "humanlayer-skills": {
       "repository": "https://github.com/humanlayer/skills.git",
-      "commit": "ca7c8088db69e315a8b2deea43820270457f8f3c",
+      "commit": "653b6411c1f70c275a18e37673b042ff99f67ceb",
       "skillPaths": {
         "show-me": "plugins/show-me/skills/show-me"
       },

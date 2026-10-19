@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Refresh all six registered upstream pins, import the explicitly invoked `chief-of-staff` Skill with a durable routing-description overlay, and absorb issue-tracker guidance and wizard environment-handling improvements from Matt Pocock. Preserve existing local adaptations and licenses; the library now contains 48 Skills. No installed client files or external runtimes are updated.
 - Add optional project-local NVIDIA SkillSpector installation with a pinned upstream dependency, isolated Python environment, static scan commands, and documented recursive coverage limits; leave global configuration and Skills/MCP installation unchanged.
 - Remove `mcp-builder`, its bundled evaluation scripts/references, durable overlays, provenance and project installation records, and dedicated tests; retain SkillSpector and reduce the library to 47 Skills.
 
