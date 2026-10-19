@@ -43,13 +43,13 @@ never credentials.
 - `Config/mcp.servers.json` contains vendor-neutral MCP definitions.
 - `Scripts/sync.mjs` validates, generates, and installs both client formats.
 
-The package includes 47 Skills: engineering workflows migrated from the former
+The package includes 48 Skills: engineering workflows migrated from the former
 `ed-engineering` plugin, package management, Vercel discovery/browser automation,
 Anthropic visual-design guidance, and HumanLayer's `show-me` visual explanations,
 plus optional RTK integration guidance.
 It does not use a Codex plugin manifest or plugin installation lifecycle.
 
-All 47 Skills have provenance in `upstreams.lock.json`: source repository, exact
+All 48 Skills have provenance in `upstreams.lock.json`: source repository, exact
 upstream directory and commit for imports, or local origin for original Skills.
 Update policy distinguishes automatic refresh, manual reconciliation, and local
 maintenance. `npm run skill-health` enforces complete, unique source coverage.
@@ -211,7 +211,7 @@ Run the installation command again to use the current `main` branch. Pin a
 release when reproducibility matters:
 
 ```sh
-npx --yes github:InternetED/ai-agent-config#v0.8.0
+npx --yes github:InternetED/ai-agent-config#v0.9.0
 ```
 
 Releases are automated by GitHub Actions: after a `main` merge passes validation,
