@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-19",
+  "updatedAt": "2026-11-10",
   "sources": {
     "mattpocock-skills": {
       "repository": "https://github.com/mattpocock/skills.git",
-      "commit": "49dd158d1076134a641b33efb035946536778336",
+      "commit": "4ae2317ddb22b046e26455e4f9c9b3aaaf62212d",
       "paths": [
         "skills/*/*"
       ],
@@ -35,6 +35,7 @@
         "setup-matt-pocock-skills",
         "setup-pre-commit",
         "setup-ts-deep-modules",
+        "software-factory",
         "tdd",
         "teach",
         "to-questionnaire",
@@ -75,6 +76,7 @@
         "claude-handoff": "skills/in-progress/claude-handoff",
         "loop-me": "skills/in-progress/loop-me",
         "setup-ts-deep-modules": "skills/in-progress/setup-ts-deep-modules",
+        "software-factory": "skills/in-progress/software-factory",
         "writing-beats": "skills/in-progress/writing-beats",
         "writing-fragments": "skills/in-progress/writing-fragments",
         "writing-shape": "skills/in-progress/writing-shape",
@@ -95,7 +97,7 @@
     },
     "compound-engineering-plugin": {
       "repository": "https://github.com/everyinc/compound-engineering-plugin.git",
-      "commit": "2e41b4490a37f53db0beb6d4904618da9af2f559",
+      "commit": "dd9b7921c9c80498eba84994ff1b8e1e81dbc1db",
       "paths": [
         "skills/ce-commit"
       ],

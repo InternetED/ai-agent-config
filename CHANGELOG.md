@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Document a Traditional Chinese scenario-based guide for all 49 Skills, including invocation examples, architecture-survey versus module-design boundaries, explicitly invoked Skills, and the current limits of `ask-matt` routing.
+- Refresh the automatic Matt Pocock and Compound Engineering upstream pins, preserve local Skills and overlays, and import the explicitly invoked `software-factory` Skill with a thin routing-description overlay. The library now contains 49 Skills; manual imports and installed client copies remain unchanged.
+
 ## [0.9.0] - 2026-10-19
 
 - Refresh all six registered upstream pins, import the explicitly invoked `chief-of-staff` Skill with a durable routing-description overlay, and absorb issue-tracker guidance and wizard environment-handling improvements from Matt Pocock. Preserve existing local adaptations and licenses; the library now contains 48 Skills. No installed client files or external runtimes are updated.
